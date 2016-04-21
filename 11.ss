@@ -204,41 +204,31 @@
 	  (vector? id))
 )
 
-(define-datatype expression expression?
-	[lit-exp
-		(id literal?)
-	] 
-	;[var-exp
-	;	(id symbol?)]
-	;[num-exp
-	;	(id number?)]
-	;[vec-exp
-	;	(id vector?)]
-	[lambda-exp
-		(id sym-or-ls?)
-		(body list?)]
-	;[no-paren-lambda
-	;	(id symbol?)
-	;	(body (list-of expression?))]
-	[app-exp
-		(rator expression?)
-		(rand list?)]
-	[set!-exp
-		(id symbol?)
-		(body expression?)]
-	[if-then-exp
-		(condition expression?)
-		(true expression?)
-		(false expression?)]
-	[no-else-exp
-		(condition expression?)
-		(true expression?)]
-	[let-exp
-		(type symbol?)
-		(bound list?)
-		;(bound-to (list-of expression?))
-		(body (list-of expression?))]
-)
+;(define-datatype expression expression?
+;	[lit-exp
+;		(id literal?)
+;	] 
+;	[lambda-exp
+;		(id sym-or-ls?)
+;		(body list?)]
+;	[app-exp
+;		(rator expression?)
+;		(rand list?)]
+;	[set!-exp
+;		(id symbol?)
+;		(body expression?)]
+;	[if-then-exp
+;		(condition expression?)
+;		(true expression?)
+;		(false expression?)]
+;	[no-else-exp
+;		(condition expression?)
+;		(true expression?)]
+;	[let-exp
+;		(type symbol?)
+;		(bound list?)
+;		(body (list-of expression?))]
+;)
 
 (define (sym-or-ls? arg) ;This helps for dealing with the 2 different lambdas
   (if (or (symbol? arg) (list? arg))

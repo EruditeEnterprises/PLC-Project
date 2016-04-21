@@ -11,12 +11,13 @@
   (lambda (exp)
     (cases expression exp
       [lit-exp (datum) datum]
-      [var-exp (id)
-				(apply-env init-env id; look up its value.
-      	   (lambda (x) x) ; procedure to call if id is in the environment 
-           (lambda () (eopl:error 'apply-env ; procedure to call if id not in env
-		          "variable not found in environment: ~s"
-			   id)))] 
+    ;  [var-exp (id)
+				;(apply-env init-env id; look up its value.
+    ;  	   (lambda (x) x) ; procedure to call if id is in the environment 
+    ;       (lambda () (eopl:error 'apply-env ; procedure to call if id not in env
+		  ;        "variable not found in environment: ~s"
+			 ;  id)))
+    ;  ] 
       [app-exp (rator rands)
         (let ([proc-value (eval-exp rator)]
               [args (eval-rands rands)])
@@ -79,6 +80,8 @@
       [(eq?) (eq? (1st args) (2nd args))]
       [(equal?) (equal? (1st args) (2nd args))]
       [(atom?) (atom? (1st args))]
+      [(length) (length (1st args))]
+      
       [else (error 'apply-prim-proc 
             "Bad primitive procedure name: ~s" 
             prim-op)])))

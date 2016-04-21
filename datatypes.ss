@@ -8,6 +8,9 @@
       (ormap 
        (lambda (pred) (pred x))
        (list number? vector? boolean? symbol? string? pair? null?))))]
+  [var-exp
+    (id symbol?)
+  ]
   [lambda-exp
     (id sym-or-ls?)
     (body list?)]

@@ -173,10 +173,10 @@
 			(if (list? (cadr datum))
 		      	(if (andmap list? (cadr datum))
 		          	(if (andmap (lambda (ls) (equal? (length ls) 2)) (cadr datum))
-		             	(let ([cad (map cadr (cadr datum))])
-			             	(if (map parse-exp cad) 
+		             	(let* ([cad (map cadr (cadr datum))]
+			             		[parsed-bound (map parse-exp cad)])
 			                	(if (andmap symbol? (map car (cadr datum))) ;first thing is symbol
-			                    	(let-exp (car datum) (cadr datum) (map parse-exp (cddr datum)))
+			                    	(let-exp (car datum) (map list (map car (cadr datum) parsed-bound) (map parse-exp (cddr datum)))
 			                      	(eopl:error 'parse-exp "variables putting into the andmap should be symbols ~s" datum))
 			              	)
 		              	)	

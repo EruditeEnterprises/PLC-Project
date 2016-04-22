@@ -110,12 +110,9 @@
 (define parse-exp         
 	(lambda (datum)
 		(cond
- 			;[(symbol? datum) (var-exp datum)]
- 			;[(number? datum) (num-exp datum)]
- 			;[(vector? datum) (vec-exp datum)]
- 			[(literal? datum) (lit-exp datum)]
- 			[(not (list? datum)) (eopl:error 'parse-exp
-              "expression ~s is not a good list" datum)]
+ 			[(and (literal? datum) (not (pair? datum))) (lit-exp datum)]
+ 			;[(not (list? datum)) (eopl:error 'parse-exp
+    ;          "expression ~s is not a good list" datum)]
  			[(pair? datum)
 	  			(cond
 	  				[(eqv? (car datum) 'quote) (lit-exp (cadr datum))]
@@ -201,6 +198,7 @@
 	  (null? id) 
 	  (string? id) 
 	  (symbol? id)
+	  (pair? id)
 	  (vector? id))
 )
 

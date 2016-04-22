@@ -110,6 +110,7 @@
 (define parse-exp         
 	(lambda (datum)
 		(cond
+			[(symbol? datum) (var-exp datum)]
  			[(and (literal? datum) (not (pair? datum))) (lit-exp datum)]
  			;[(not (list? datum)) (eopl:error 'parse-exp
     ;          "expression ~s is not a good list" datum)]
@@ -202,32 +203,6 @@
 	  (vector? id))
 )
 
-(define-datatype expression expression?
-	[lit-exp
-		(id literal?)
-	] 
-	[lambda-exp
-		(id sym-or-ls?)
-		(body list?)]
-	[app-exp
-		(rator expression?)
-		(rand list?)]
-	[set!-exp
-		(id symbol?)
-		(body expression?)]
-	[if-then-exp
-		(condition expression?)
-		(true expression?)
-		(false expression?)]
-	[no-else-exp
-		(condition expression?)
-		(true expression?)]
-	[let-exp
-		(type symbol?)
-		(bound list?)
-		(body (list-of expression?))]
-)
-
 (define (sym-or-ls? arg) ;This helps for dealing with the 2 different lambdas
   (if (or (symbol? arg) (list? arg))
       #t)
@@ -237,7 +212,7 @@
 (define unparse-exp
 	(lambda (parsed-exp)
 		(cases expression parsed-exp
-			;(var-exp (id) id)
+			(var-exp (id) id)
 			;(num-exp (id) id)
 			;(vec-exp (id) id)
 			(lit-exp (id) id)

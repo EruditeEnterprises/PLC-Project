@@ -5,8 +5,7 @@
   [lit-exp        ; "Normal" data.  Did I leave out any types?
    (datum literal?)]
   [var-exp
-    (id symbol?)
-  ]
+    (id symbol?)]
   [lambda-exp
     (id sym-or-ls?)
     (body list?)]

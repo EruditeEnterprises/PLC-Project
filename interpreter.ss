@@ -22,9 +22,18 @@
                   (eval-exp false)
         )
       ]
-      [let-exp (type bound body)
-        ()
-      ]
+      ;[let-exp (type bound body)
+      ;  (let ([map list (map car bound) 
+      ;                (map eval-exp (map cadr bound))])
+      ;                (eval-exp body)
+      ;  )
+      ;  ;(let (map list '(a b)) 
+      ;  ;              (eval-exp body)
+      ;  ;)
+      ;]
+      ;[lambda-exp (id body)
+
+      ;]
       [else (eopl:error 'eval-exp "Bad abstract syntax: ~a" exp)])))
 
 ; evaluate the list of operands, putting results into a list

@@ -1,13 +1,9 @@
-
+(load "parse.ss")
 ;; Parsed expression datatypes
 
 (define-datatype expression expression?
   [lit-exp        ; "Normal" data.  Did I leave out any types?
-   (datum
-    (lambda (x)
-      (ormap 
-       (lambda (pred) (pred x))
-       (list number? vector? boolean? symbol? string? pair? null?))))]
+   (datum literal?)]
   [var-exp
     (id symbol?)
   ]

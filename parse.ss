@@ -118,6 +118,7 @@
               "expression ~s is not a good list" datum)]
  			[(pair? datum)
 	  			(cond
+	  				[(eqv? (car datum) 'quote) (parse-exp (cdr datum))]
 		    		[(eqv? (car datum) 'lambda)
 		    			(lambda-parse datum)
 		    		]
@@ -200,7 +201,6 @@
 	  (null? id) 
 	  (string? id) 
 	  (symbol? id)
-	  (pair? id) 
 	  (vector? id))
 )
 

@@ -43,7 +43,12 @@
                    "Attempt to apply bad procedure: ~s" 
                     proc-value)])))
 
-(define *prim-proc-names* '(+ - * add1 sub1 cons =))
+(define *prim-proc-names* '(+ - * / add1 sub1 zero? cons = not < > <= >= cons 
+  car cdr list null? assq eq? equal? atom? length list->vector 
+  list? pair? procedure? vector->list vector make-vector vector-ref 
+  vector? number? symbol? set-car! set-cdr! vector-set! display 
+  newline caar cadr cdar cddr caaar caadr cadar caddr cdaar cdadr 
+  cddar cddr))
 
 (define init-env         ; for now, our initial global environment only contains 
   (extend-env            ; procedure names.  Recall that an environment associates
@@ -74,6 +79,18 @@
       [(cons) (cons (1st args) (2nd args))]
       [(car) (car (1st args))]
       [(cdr) (cdr (1st args))]
+      [(caar) (caar (1st args)]
+      [(cadr) (cadr (1st args)]
+      [(cdar) (cdar (1st args)]
+      [(cddr) (cddr (1st args)]
+      [(caaar) (caaar (1st args)]
+      [(cadar) (cadar (1st args)]
+      [(cdaar) (cdaar (1st args)]
+      [(cddar) (cddar (1st args)]
+      [(caadr) (caadr (1st args)]
+      [(caddr) (caddr (1st args)]
+      [(cdadr) (cdadr (1st args)]
+      [(cdddr) (cdddr (1st args)]
       [(list) (list (1st args))]
       [(null?) (null? (1st args))]
       [(assq) (assq (1st args) (2nd args))]
@@ -81,7 +98,23 @@
       [(equal?) (equal? (1st args) (2nd args))]
       [(atom?) (atom? (1st args))]
       [(length) (length (1st args))]
-      
+      [(list->vector) (list->vector (1st args))]
+      [(list?) (list? (1st args))]
+      [(pair?) (pair? (1st args))]
+      [(procedure?) (or (procedure? (1st args)) (proc-val? (1st args)))]
+      [(vector->list) (vector->list (1st args))]
+      [(vector) (apply vector args)] ;multiple args case
+      [(make-vector) (make-vector (1st args) (2nd args))]
+      [(vector-ref) (vector-ref (1st args) (2nd args))]
+      [(vector?) (vector? (1st args))]
+      [(number?) (number? (1st args))]
+      [(symbol?) (symbol? (1st args))]
+      [(set-car!) (set-car! (1st args) (2nd args))]
+      [(set-cdr!) (set-cdr! (1st args) (2nd args))]
+      [(vector-set!) (vector-set! (1st args) (2nd args) (3rd args))]
+      [(display) (display (1st args))]
+      [(newline) (newline)]
+
       [else (error 'apply-prim-proc 
             "Bad primitive procedure name: ~s" 
             prim-op)])))

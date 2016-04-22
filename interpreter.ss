@@ -11,17 +11,17 @@
   (lambda (exp)
     (cases expression exp
       [lit-exp (datum) datum]
-    ;  [var-exp (id)
-				;(apply-env init-env id; look up its value.
-    ;  	   (lambda (x) x) ; procedure to call if id is in the environment 
-    ;       (lambda () (eopl:error 'apply-env ; procedure to call if id not in env
-		  ;        "variable not found in environment: ~s"
-			 ;  id)))
-    ;  ] 
+      [var-exp (id) id]
       [app-exp (rator rands)
         (let ([proc-value (eval-exp rator)]
               [args (eval-rands rands)])
           (apply-proc proc-value args))]
+      [if-then-exp (condition true false)
+        (if (eval-exp condition)
+                  (eval-exp true)
+                  (eval-exp false)
+        )
+      ]
       [else (eopl:error 'eval-exp "Bad abstract syntax: ~a" exp)])))
 
 ; evaluate the list of operands, putting results into a list

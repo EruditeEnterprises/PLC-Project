@@ -22,6 +22,9 @@
                   (eval-exp false)
         )
       ]
+      [let-exp (type bound body)
+        ()
+      ]
       [else (eopl:error 'eval-exp "Bad abstract syntax: ~a" exp)])))
 
 ; evaluate the list of operands, putting results into a list

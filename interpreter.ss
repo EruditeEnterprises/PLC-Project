@@ -11,7 +11,13 @@
   (lambda (exp)
     (cases expression exp
       [lit-exp (datum) datum]
-      [var-exp (id) id]
+      [var-exp (id)
+        (apply-env init-env id; look up its value.
+          (lambda (x) x) ; procedure to call if id is in the environment 
+           (lambda () (eopl:error 'apply-env ; procedure to call if id not in env
+              "variable not found in environment: ~s"
+         id)))
+      ]
       [app-exp (rator rands)
         (let ([proc-value (eval-exp rator)]
               [args (eval-rands rands)])
@@ -22,15 +28,13 @@
                   (eval-exp false)
         )
       ]
-      ;[let-exp (type bound body)
-      ;  (let ([map list (map car bound) 
-      ;                (map eval-exp (map cadr bound))])
-      ;                (eval-exp body)
-      ;  )
-      ;  ;(let (map list '(a b)) 
-      ;  ;              (eval-exp body)
-      ;  ;)
-      ;]
+      [let-exp (type bound body)
+        (let (map list 
+                  (map car bound) 
+                  (map eval-exp (map cadr bound)))
+              (eval-exp body)
+        )
+      ]
       ;[lambda-exp (id body)
 
       ;]

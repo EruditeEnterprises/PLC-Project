@@ -3,106 +3,6 @@
 
 (load "chez-init.ss")
 
-;Problem 1
-;a
-(define-syntax my-let
-	(syntax-rules ()
-		[(_ ((x v) ...) e1 e2 ...)
-			((lambda (x ...) e1 e2 ...)
-				v ...)
-		]
-		[(_ name ((x v) ...) e1 e2 ...) 
-			(letrec ([name (lambda (x ...) e1 e2 ...)]) 
-				(name v ...))
-			;((letrec ([name (lambda (x ...) e1 e2 ...)]) 
-			;	name) v ...)
-		]
-	)
-)
-
-;testing:
-;(my-let fact ([n 5]) (if (zero? n) 1 (* n (fact (- n 1)))))
-
-(define-syntax my-or
-	(syntax-rules ()
-		[(_) #f]
-		[(_ e) e]
-		[(_ e1 e2 ...) (let ((rep e1))
-		(if rep rep (my-or e2 ...)))]
-	)
-)
-
-(define-syntax +=
-	(syntax-rules ()
-		[(_ a num) 
-			(begin (set! a (+ a num)) a)
-		]
-	)
-)
-
-(define-syntax return-first
-	(syntax-rules ()
-		[(_ e) e]
-		[(_ e1 e2 ...) (let ((rep e1))
-			e2 ... rep)
-		]
-	)
-)
-
-(define-datatype bintree bintree?
- (leaf-node
- (num integer?))
- (interior-node
- (key symbol?)
- (left-tree bintree?)
- (right-tree bintree?)))
-
-;Problem 2
-(define (bintree-to-list tree)
-	(cases bintree tree
-		[leaf-node (num) (list 'leaf-node num)]
-		[interior-node (key left-sub-tree right-sub-tree) 
-			(list 'interior-node key
-			(bintree-to-list left-sub-tree)
-			(bintree-to-list right-sub-tree))
-		]
-	)
-)
-
-;Problem 3
-(define (max-interior tree)
-	(car (max-interior-cases tree))
-)
-
-(define (max-interior-cases tree)
-	(cases bintree tree
-		[leaf-node (num) (list '() num num)]
-		[interior-node (key left-sub-tree right-sub-tree)
-			(let* ([leftVal (max-interior-cases left-sub-tree)]
-						[rightVal (max-interior-cases right-sub-tree)]
-						[lrsum (+ (caddr leftVal) (caddr rightVal))])
-						(cond
-							((and (or (null? (car leftVal)) (<= (cadr leftVal) lrsum))
-								 (or (null? (car rightVal)) (<= (cadr rightVal) lrsum)))
-								(list (cadr tree) lrsum lrsum)
-							)
-							((and (>= (cadr leftVal) (cadr rightVal)) 
-									(not (null? (car leftVal))))
-								(list (car leftVal) (cadr leftVal) lrsum)
-							)
-							(else 
-								(list (car rightVal) (cadr rightVal) lrsum)
-							)
-						)
-			)
-		]
-	)
-)
-
-;Problem 4
-
-(load "chez-init.ss")
-
 (define 1st car)
 (define 2nd cadr)
 (define 3rd caddr)
@@ -177,8 +77,8 @@
 		             	(let* ([cad (map cadr (cadr datum))]
 			             		[parsed-bound (map parse-exp cad)])
 			                	(if (andmap symbol? (map car (cadr datum))) ;first thing is symbol
-			                    	(let-exp (car datum) (map list (map car (cadr datum) parsed-bound) (map parse-exp (cddr datum)))
-			                      	(eopl:error 'parse-exp "variables putting into the andmap should be symbols ~s" datum))
+			                    	(let-exp (car datum) (map list (map car (cadr datum)) parsed-bound) (map parse-exp (cddr datum)))
+			                      	(eopl:error 'parse-exp "variables putting into the andmap should be symbols ~s" datum)
 			              	)
 		              	)	
 		              	(eopl:error 'parse-exp 

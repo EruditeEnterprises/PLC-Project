@@ -35,6 +35,9 @@
 (define-datatype proc-val proc-val?
   [prim-proc
    (name symbol?)]
+  [lambda-proc
+    (proc procedure?)
+  ]
 )
 	 
 	 

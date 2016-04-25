@@ -66,6 +66,11 @@
           ))
         )
       ]
+      [no-else-exp (condition true)
+        (if (eval-exp condition env)
+          (eval-exp true env)
+        )
+      ]
       [else (eopl:error 'eval-exp "Bad abstract syntax: ~a" exp)])))
 
 (define (split-vals args index)

@@ -50,8 +50,30 @@
           ))
         )
       ]
+      [lambda-spec-exp (indiv rest body)
+        (lambda-proc (lambda (args)
+          (let 
+            ([new-env 
+              (extend-env 
+                (append indiv (list rest))
+                (split-vals args (length indiv))
+                env
+              )
+            ])
+              (let ([bodies (eval-map body new-env)])
+                (list-ref bodies (- (length bodies) 1))
+              )
+          ))
+        )
+      ]
       [else (eopl:error 'eval-exp "Bad abstract syntax: ~a" exp)])))
 
+(define (split-vals args index)
+  (if (= index 0)
+    (list args)
+    (cons (car args) (split-vals (cdr args) (- index 1)))
+  )
+)
 
 ; evaluate the list of operands, putting results into a list
 

@@ -1,7 +1,5 @@
-;Assignment 11
-;Nithin Perumal
-
 (load "chez-init.ss")
+(load "datatypes.ss")
 
 (define 1st car)
 (define 2nd cadr)
@@ -54,15 +52,33 @@
 		(if (< (length datum) 3) ;Error checking
 			;Something
       		(eopl:error 'parse-exp "lambda-parse: length < 3 ~s" datum)
-			(if (list? (2nd datum)) 
-      			(if (andmap symbol? (2nd datum)) 
-					(lambda-exp (2nd datum) (map parse-exp (cddr datum)))
-		        	(eopl:error 'parse-exp
-              			"error in passing args to lambda ~s they need 
-              				to be symbols" datum)
-				)
+			(cond 
+				[(list? (2nd datum)) 
+	      			(if (andmap symbol? (2nd datum)) 
+						(lambda-exp (2nd datum) (map parse-exp (cddr datum)))
+			        	(eopl:error 'parse-exp
+	              			"error in passing args to lambda ~s they need 
+	              				to be symbols" datum)
+					)
+				]
+				[(symbol? (2nd datum))
+					(lambda-spec-exp '() (2nd datum) (map parse-exp (cddr datum)))
+				]
+				[(pair? (2nd datum))
+					(let ([split (split-list (2nd datum))])
+						(lambda-spec-exp (car split) (cadr split) (map parse-exp (cddr datum)))
+					)
+				]
           		(lambda-exp (2nd datum) (map parse-exp (cddr datum)))
 			)		
+		)
+	)
+)
+(define (split-list lst)
+	(if (symbol? (cdr lst))
+		(list (list (car lst)) (cdr lst))
+		(let ([rest (split-list (cdr lst))])
+			(list (cons (car lst) (car rest)) (cadr rest))
 		)
 	)
 )
@@ -92,22 +108,6 @@
 		)
 	)
 )
-
-(define (literal? id)
-	(or (number? id) 
-	  (boolean? id) 
-	  (null? id) 
-	  (string? id) 
-	  (symbol? id)
-	  (pair? id)
-	  (vector? id))
-)
-
-(define (sym-or-ls? arg) ;This helps for dealing with the 2 different lambdas
-  (if (or (symbol? arg) (list? arg))
-      #t)
-)
-
 
 (define unparse-exp
 	(lambda (parsed-exp)

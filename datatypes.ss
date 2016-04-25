@@ -1,4 +1,3 @@
-(load "parse.ss")
 ;; Parsed expression datatypes
 
 (define-datatype expression expression?
@@ -7,7 +6,11 @@
   [var-exp
     (id symbol?)]
   [lambda-exp
-    (id sym-or-ls?)
+    (id (list-of symbol?))
+    (body (list-of expression?))]
+  [lambda-spec-exp
+    (indiv-syms (list-of symbol?))
+    (rest-sym symbol?)
     (body list?)]
   [app-exp
     (rator expression?)
@@ -28,7 +31,20 @@
     (body (list-of expression?))]
 )
 
-	
+(define (literal? id)
+  (or (number? id) 
+    (boolean? id) 
+    (null? id) 
+    (string? id) 
+    (symbol? id)
+    (pair? id)
+    (vector? id))
+)
+
+(define (sym-or-ls? arg) ;This helps for dealing with the 2 different lambdas
+  (or (symbol? arg) (pair? arg) (list? arg))
+)
+
 ; datatype for procedures.  At first there is only one
 ; kind of procedure, but more kinds will be added later.
 

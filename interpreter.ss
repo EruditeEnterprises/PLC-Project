@@ -81,7 +81,7 @@
       [let-exp (type bound body)
         (cond
           ((equal? type 'let) 
-            (app-exp (lambda-exp (map car bound) body) (map cadr bound))
+            (app-exp (lambda-exp (map car bound) body) (map cadr bound)))
           ((equal? type 'let*)
             (let*-recursor bound body)
           )
@@ -114,9 +114,9 @@
       [or-exp (body)
         (or-recursor body)
       ]
-      [case-exp (key body)
-        
-      ]
+      ;[case-exp (key body)
+
+      ;]
       [else exp]
     )
   )

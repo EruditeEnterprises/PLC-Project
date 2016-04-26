@@ -133,9 +133,10 @@
 (define case-recursor
   (lambda (key exp elsa)
     (if (null? exp)
-      (map syntax-expand elsa)
-      (if-then-exp (app-exp (var-exp member) (list key (lit-exp (car exp)))) 
-        (map syntax-expand (cadr exp)) 
+      (syntax-expand (begin-exp elsa))
+      (if-then-exp 
+        (app-exp (var-exp 'member) (list key (lit-exp (car exp)))) 
+        (syntax-expand (begin-exp (cadar exp))) 
         (case-recursor (cdr exp) elsa)
       )
     )
@@ -145,10 +146,10 @@
 (define let*-recursor
   (lambda (bound body)
     (if (null? bound)
-      (syntax-expand body)
+      (map syntax-expand body)
       (app-exp 
-        (lambda-exp (caar bound) (let*-recursor (cdr bound) body))
-        (syntax-expand (cadar bound))
+        (lambda-exp (list (caar bound)) (let*-recursor (cdr bound) body))
+        (list (syntax-expand (cadar bound)))
       )
     )
   )
@@ -170,7 +171,7 @@
       (lit-exp #f)
       (if-then-exp
         (syntax-expand (car exp)) 
-        (lit-exp #t)  
+        (syntax-expand (car exp))  
         (or-recursor (cdr exp))
       )
     )

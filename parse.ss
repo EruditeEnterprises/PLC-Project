@@ -43,13 +43,13 @@
 		    			(cond-parse (cdr datum))
 		    		]
 		    		[(eqv? (car datum) 'and)
-						(and-exp (cdr datum))
+						(and-exp (map parse-exp (cdr datum)))
 		    		]
 		    		[(eqv? (car datum) 'or)
-						(or-exp (cdr datum))
+						(or-exp (map parse-exp (cdr datum)))
 		    		]
 		    		[(eqv? (car datum) 'case)
-		    			(case-parse datum)
+		    			(case-parse (cdr datum))
 		    		]		    				    		
 	   				[else (app-exp (parse-exp (1st datum)) (map parse-exp (cdr datum)))]
 	 			)
@@ -62,19 +62,20 @@
 (define case-parse
 	(lambda (datum)
 		(if (equal? (car (list-ref datum (- (length datum) 1))) 'else)
-			(cond-exp 
+			(case-exp 
+				[parse-exp (car datum)]
 				[map (lambda (x) 
-					((car x) (parse-exp (cadr x)))) 
-						(list-head datum (- 2 (length datum)))
+					(list (parse-exp (car x)) (map parse-exp (cdr x)))) 
+						(cdr (list-head datum (- (length datum) 1)))
 				]
-				[parse-exp (cadr (list-ref datum (- (length datum) 1)))]
-			)
-			(cond-exp
+				[map parse-exp (cdr (list-ref datum (- (length datum) 1)))])
+			(case-exp
+				[parse-exp (car datum)]
 				[map (lambda (x) 
-					((car x) (parse-exp (cadr x)))) 
-						(list-head datum (- 1 (length datum)))
+					(list (parse-exp (car x)) (map parse-exp (cdr x)))) 
+						(cdr (list-head datum (length datum)))
 				]
-				[app-exp (var-exp void) '()]
+				[list (app-exp (var-exp 'void) '())]
 			)			
 		)
 	)
@@ -93,9 +94,9 @@
 			(cond-exp
 				[map (lambda (x) 
 					(list (parse-exp (car x)) (map parse-exp (cdr x)))) 
-						(list-head datum (- (length datum) 2))
+						(list-head datum (length datum))
 				]
-				[app-exp (var-exp void) '()]
+				[list (app-exp (var-exp 'void) '())]
 			)			
 		)
 	)

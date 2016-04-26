@@ -55,7 +55,7 @@
   [case-exp
     (key expression?)
     (body list?)
-    (else expression?)
+    (else list?)
   ]  
 )
 

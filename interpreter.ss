@@ -133,7 +133,7 @@
   list? pair? procedure? vector->list vector make-vector vector-ref 
   vector? number? symbol? set-car! set-cdr! vector-set! display 
   newline caar cadr cdar cddr caaar caadr cadar caddr cdaar cdadr 
-  cddar cddr map apply))
+  cddar cddr map apply void))
 
 (define init-env         ; for now, our initial global environment only contains 
   (extend-env            ; procedure names.  Recall that an environment associates
@@ -200,6 +200,7 @@
       [(vector-set!) (apply vector-set! args)]
       [(display) (display (1st args))]
       [(newline) (newline)]
+      [(void) (void)]
       [(map) (apply map (get-proc (1st args)) (cdr args))]
       [(apply) (apply (get-proc (1st args)) (cadr args))]
       [else (error 'apply-prim-proc 

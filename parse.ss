@@ -42,11 +42,41 @@
 		    		[(eqv? (car datum) 'cond)
 		    			(cond-parse datum)
 		    		]
+		    		[(eqv? (car datum) 'and)
+						(and-exp (cdr datum))
+		    		]
+		    		[(eqv? (car datum) 'or)
+						(or-exp (cdr datum))
+		    		]
+		    		[(eqv? (car datum) 'case)
+		    			(case-parse datum)
+		    		]		    				    		
 	   				[else (app-exp (parse-exp (1st datum)) (map parse-exp (cdr datum)))]
 	 			)
 	  		]
  			[else (eopl:error 'parse-exp "bad expression: ~s" datum)]
  		)
+	)
+)
+
+(define case-parse
+	(lambda (datum)
+		(if (equal? (car (list-ref datum (- (length datum) 1))) 'else)
+			(cond-exp 
+				[map (lambda (x) 
+					((car x) (parse-exp (cadr x)))) 
+						(list-head datum (- 2 (length datum)))
+				]
+				[parse-exp (cadr (list-ref datum (- (length datum) 1)))]
+			)
+			(cond-exp
+				[map (lambda (x) 
+					((car x) (parse-exp (cadr x)))) 
+						(list-head datum (- 1 (length datum)))
+				]
+				[app-exp (var-exp void) '()]
+			)			
+		)
 	)
 )
 

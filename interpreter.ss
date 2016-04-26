@@ -114,10 +114,22 @@
       [or-exp (body)
         (or-recursor body)
       ]
-      ;[case-exp (key body)
-
-      ;]
+      [case-exp (key body else)
+        (case-recursor (syntax-expand key) body else)
+      ]
       [else exp]
+    )
+  )
+)
+
+(define case-recursor
+  (lambda (key exp elsa)
+    (if (null? exp)
+      (map syntax-expand elsa)
+      (if-then-exp (app-exp (var-exp member) (list key (lit-exp (car exp)))) 
+        (map syntax-expand (cadr exp)) 
+        (case-recursor (cdr exp) elsa)
+      )
     )
   )
 )

@@ -20,7 +20,7 @@
       ]
       [app-exp (rator rands)
         (let ([proc-value (eval-exp rator env)]
-              [args (eval-map rands env)])
+              [args (eval-all rands env)])
           (apply-proc proc-value args))]
       [if-then-exp (condition true false)
         (if (eval-exp condition env)
@@ -32,11 +32,11 @@
         (let ([new-env 
                 (extend-env 
                   (map car bound) 
-                  (eval-map (map cadr bound) env)
+                  (eval-all (map cadr bound) env)
                   env
                 )
               ])
-              (let ([bodies (eval-map body new-env)])
+              (let ([bodies (eval-all body new-env)])
                 (list-ref bodies (- (length bodies) 1))
               )
         )
@@ -44,7 +44,7 @@
       [lambda-exp (id body)
         (lambda-proc (lambda (args) 
           (let ([new-env (extend-env id args env)])
-            (let ([bodies (eval-map body new-env)])
+            (let ([bodies (eval-all body new-env)])
               (list-ref bodies (- (length bodies) 1))
             )
           ))
@@ -60,7 +60,7 @@
                 env
               )
             ])
-              (let ([bodies (eval-map body new-env)])
+              (let ([bodies (eval-all body new-env)])
                 (list-ref bodies (- (length bodies) 1))
               )
           ))
@@ -110,9 +110,17 @@
 
 ; evaluate the list of operands, putting results into a list
 
-(define eval-map
+(define eval-all
   (lambda (rands env)
-    (map (lambda (x) (eval-exp x env)) rands)))
+    (if (null? rands)
+      '()
+      (let ([x (eval-exp (car rands) env)])
+        (cons x (eval-all (cdr rands) env))
+      )
+    )
+  )
+)
+    
 
 ;  Apply a procedure to its arguments.
 ;  At this point, we only have primitive procedures.  

@@ -29,6 +29,32 @@
     (type symbol?)
     (bound list?)
     (body (list-of expression?))]
+  [begin-exp
+    (body (list-of expression?))
+  ]
+  [cond-exp
+    (conditions 
+      (list-of 
+        (lambda (x) 
+          (and 
+            (expression? (car x))
+            (list? (cadr x))
+          )
+        )
+    ))
+    (else expression?)
+  ]
+  [and-exp
+    (body (list-of expression?))
+  ]
+  [or-exp
+    (body (list-of expression?))
+  ]
+  [case-exp
+    (key expression?)
+    (body list?)
+    (else expression?)
+  ]  
 )
 
 (define (literal? id)

@@ -10,8 +10,6 @@
 		(cond
 			[(symbol? datum) (var-exp datum)]
  			[(and (literal? datum) (not (pair? datum))) (lit-exp datum)]
- 			;[(not (list? datum)) (eopl:error 'parse-exp
-    ;          "expression ~s is not a good list" datum)]
  			[(pair? datum)
 	  			(cond
 	  				[(eqv? (car datum) 'quote) (lit-exp (cadr datum))]
@@ -20,7 +18,6 @@
 		    		]
 		    		[(eqv? (car datum) 'set!) 
 						(if (equal? (length datum) 3)
-							;Something
 							(set!-exp (2nd datum) (parse-exp (caddr datum)))
 							(eopl:error 'parse-exp "set!-parse: length!=3 ~s" datum)
 						)
@@ -39,11 +36,38 @@
 		    		[(eqv? (car datum) 'let) (let-parse datum)]
 		    		[(eqv? (car datum) 'let*) (let-parse datum)]
 		    		[(eqv? (car datum) 'letrec) (let-parse datum)]
+		    		[(eqv? (car datum) 'begin)
+						(begin-exp (cdr datum))
+		    		]
+		    		[(eqv? (car datum) 'cond)
+		    			(cond-parse datum)
+		    		]
 	   				[else (app-exp (parse-exp (1st datum)) (map parse-exp (cdr datum)))]
 	 			)
 	  		]
  			[else (eopl:error 'parse-exp "bad expression: ~s" datum)]
  		)
+	)
+)
+
+(define cond-parse
+	(lambda (datum)
+		(if (equal? (car (list-ref datum (- (length datum) 1))) 'else)
+			(cond-exp 
+				[map (lambda (x) 
+					(parse-exp (car x)) (parse-exp (cadr x))) 
+						(list-head datum (- 2 (length datum)))
+				]
+				[parse-exp (cadr (list-ref datum (- (length datum) 1)))]
+			)
+			(cond-exp
+				[map (lambda (x) 
+					(parse-exp (car x)) (parse-exp (cadr x))) 
+						(list-head datum (- 1 (length datum)))
+				]
+				[app-exp (var-exp void) '()]
+			)			
+		)
 	)
 )
 

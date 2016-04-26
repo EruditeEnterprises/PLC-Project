@@ -71,7 +71,35 @@
           (eval-exp true env)
         )
       ]
-      [else (eopl:error 'eval-exp "Bad abstract syntax: ~a" exp)])))
+      [else (eopl:error 'eval-exp "Bad abstract syntax: ~a" exp)])
+  )
+)
+
+(define syntax-expand
+  (lambda (exp)
+    (cases expression exp
+      [let-exp (type bound body)
+        (app-exp (lambda-exp (map car bound) body) (map cadr bound))
+      ]
+      [lambda-exp (id body)
+        (lambda-exp id (map syntax-expand body))
+      ]
+      [lambda-spec-exp (indiv-syms rest-sym body)
+        (lambda-spec-exp indiv-syms rest-sym (map syntax-expand body))
+      ]
+      [app-exp (rator rand)
+        (app-exp (syntax-expand rator) (map syntax-expand rand))
+      ]
+      [if-then-exp (condition true false)
+        (if-then-exp (syntax-expand condition) (syntax-expand true) (syntax-expand false))
+      ]
+      [no-else-exp (condition true)
+        (no-else-exp (syntax-expand condition) (syntax-expand true))
+      ]
+      [else exp]
+    )
+  )
+)
 
 (define (split-vals args index)
   (if (= index 0)
@@ -168,7 +196,8 @@
       [(symbol?) (symbol? (1st args))]
       [(set-car!) (set-car! (1st args) (2nd args))]
       [(set-cdr!) (set-cdr! (1st args) (2nd args))]
-      [(vector-set!) (vector-set! (1st args) (2nd args) (3rd args))]
+      ;[(vector-set!) (vector-set! (1st args) (2nd args) (3rd args))]
+      [(vector-set!) (apply vector-set! args)]
       [(display) (display (1st args))]
       [(newline) (newline)]
       [(map) (apply map (get-proc (1st args)) (cdr args))]
@@ -203,8 +232,13 @@
       (eopl:pretty-print answer) (newline)
       (rep))))  ; tail-recursive, so stack doesn't grow.
 
+
 (define eval-one-exp
-  (lambda (x) (top-level-eval (parse-exp x))))
+  (lambda (x) 
+    ;(top-level-eval (parse-exp x))
+    (eval-exp (syntax-expand (parse-exp x)) init-env)
+  )
+)
 
 
 

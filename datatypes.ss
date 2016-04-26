@@ -33,15 +33,17 @@
     (body (list-of expression?))
   ]
   [cond-exp
-    (conditions 
-      (list-of 
-        (lambda (x) 
-          (and 
-            (expression? (car x))
-            (list? (cadr x))
-          )
-        )
-    ))
+    (conditions
+      list? 
+      ;(list? 
+        ;(lambda (x) 
+        ;  (and 
+        ;    (expression? (car x))
+        ;    (list? (cadr x))
+        ;  )
+        ;)
+    ;)
+    )
     (else expression?)
   ]
   [and-exp

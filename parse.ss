@@ -37,10 +37,10 @@
 		    		[(eqv? (car datum) 'let*) (let-parse datum)]
 		    		[(eqv? (car datum) 'letrec) (let-parse datum)]
 		    		[(eqv? (car datum) 'begin)
-						(begin-exp (cdr datum))
+						(begin-exp (map parse-exp (cdr datum)))
 		    		]
 		    		[(eqv? (car datum) 'cond)
-		    			(cond-parse datum)
+		    			(cond-parse (cdr datum))
 		    		]
 		    		[(eqv? (car datum) 'and)
 						(and-exp (cdr datum))
@@ -86,14 +86,14 @@
 			(cond-exp 
 				[map (lambda (x) 
 					(parse-exp (car x)) (parse-exp (cadr x))) 
-						(list-head datum (- 2 (length datum)))
+						(list-head datum (- (length datum) 2))
 				]
 				[parse-exp (cadr (list-ref datum (- (length datum) 1)))]
 			)
 			(cond-exp
 				[map (lambda (x) 
 					(parse-exp (car x)) (parse-exp (cadr x))) 
-						(list-head datum (- 1 (length datum)))
+						(list-head datum (- (length datum) 1))
 				]
 				[app-exp (var-exp void) '()]
 			)			

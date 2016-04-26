@@ -81,7 +81,15 @@
       [let-exp (type bound body)
         (cond
           ((equal? type 'let) 
-            (app-exp (lambda-exp (map car bound) body) (map cadr bound)))
+            (app-exp 
+              (lambda-exp 
+                (map car bound) 
+                (map syntax-expand body)
+              ) 
+              (map syntax-expand (map cadr bound))
+            )
+          )
+
           ((equal? type 'let*)
             (let*-recursor bound body)
           )
@@ -173,7 +181,11 @@
   (lambda (exp elsa)
     (if (null? exp)
       (map syntax-expand elsa)
-      (if-then-exp (syntax-expand (car exp)) (map syntax-expand (cadr exp)) (cond-recursor (cdr exp) elsa))
+      (if-then-exp 
+        (syntax-expand (car exp)) 
+        (map syntax-expand (cadr exp)) 
+        (cond-recursor (cdr exp) elsa)
+      )
     )
   )
 )

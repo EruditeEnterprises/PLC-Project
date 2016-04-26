@@ -111,7 +111,7 @@
         (no-else-exp (syntax-expand condition) (syntax-expand true))
       ]
       [begin-exp (body)
-        (app-exp (lambda-exp '() body) '()) 
+        (app-exp (lambda-exp '() (map syntax-expand body)) '()) 
       ]
       [cond-exp (conditions else)
         (cond-recursor conditions else)
@@ -180,10 +180,10 @@
 (define cond-recursor
   (lambda (exp elsa)
     (if (null? exp)
-      (map syntax-expand elsa)
+      (syntax-expand (begin-exp elsa))
       (if-then-exp 
         (syntax-expand (caar exp)) 
-        (map syntax-expand (cadar exp)) 
+        (syntax-expand (begin-exp (cadar exp))) 
         (cond-recursor (cdr exp) elsa)
       )
     )

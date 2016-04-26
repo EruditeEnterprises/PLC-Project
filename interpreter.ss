@@ -91,7 +91,7 @@
           )
 
           ((equal? type 'let*)
-            (let*-recursor bound body)
+            (car (let*-recursor bound body))
           )
         )
       ]
@@ -135,9 +135,9 @@
     (if (null? exp)
       (syntax-expand (begin-exp elsa))
       (if-then-exp 
-        (app-exp (var-exp 'member) (list key (lit-exp (car exp)))) 
+        (app-exp (var-exp 'member) (list key (lit-exp (caar exp)))) 
         (syntax-expand (begin-exp (cadar exp))) 
-        (case-recursor (cdr exp) elsa)
+        (case-recursor key (cdr exp) elsa)
       )
     )
   )
@@ -147,10 +147,10 @@
   (lambda (bound body)
     (if (null? bound)
       (map syntax-expand body)
-      (app-exp 
+      (list (app-exp 
         (lambda-exp (list (caar bound)) (let*-recursor (cdr bound) body))
         (list (syntax-expand (cadar bound)))
-      )
+      ))
     )
   )
 )
@@ -231,7 +231,7 @@
   list? pair? procedure? vector->list vector make-vector vector-ref 
   vector? number? symbol? set-car! set-cdr! vector-set! display 
   newline caar cadr cdar cddr caaar caadr cadar caddr cdaar cdadr 
-  cddar cddr map apply void))
+  cddar cddr map apply void member))
 
 (define init-env         ; for now, our initial global environment only contains 
   (extend-env            ; procedure names.  Recall that an environment associates
@@ -242,7 +242,6 @@
 
 ; Usually an interpreter must define each 
 ; built-in procedure individually.  We are "cheating" a little bit.
-
 (define apply-prim-proc
   (lambda (prim-proc args)
     (case prim-proc
@@ -301,6 +300,7 @@
       [(void) (void)]
       [(map) (apply map (get-proc (1st args)) (cdr args))]
       [(apply) (apply (get-proc (1st args)) (cadr args))]
+      [(member) (member (1st args) (2nd args))]
       [else (error 'apply-prim-proc 
             "Bad primitive procedure name: ~s" 
             prim-op)])))

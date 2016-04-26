@@ -56,6 +56,10 @@
     (key expression?)
     (body list?)
     (else list?)
+  ]
+  [while-exp
+    (test-exp expression?)
+    (body list?)
   ]  
 )
 

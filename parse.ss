@@ -65,14 +65,14 @@
 			(case-exp 
 				[parse-exp (car datum)]
 				[map (lambda (x) 
-					(list (parse-exp (car x)) (map parse-exp (cdr x)))) 
+					(list (car x) (map parse-exp (cdr x)))) 
 						(cdr (list-head datum (- (length datum) 1)))
 				]
 				[map parse-exp (cdr (list-ref datum (- (length datum) 1)))])
 			(case-exp
 				[parse-exp (car datum)]
 				[map (lambda (x) 
-					(list (parse-exp (car x)) (map parse-exp (cdr x)))) 
+					(list (car x) (map parse-exp (cdr x)))) 
 						(cdr (list-head datum (length datum)))
 				]
 				[list (app-exp (var-exp 'void) '())]

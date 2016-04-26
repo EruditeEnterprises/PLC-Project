@@ -105,7 +105,7 @@
   list? pair? procedure? vector->list vector make-vector vector-ref 
   vector? number? symbol? set-car! set-cdr! vector-set! display 
   newline caar cadr cdar cddr caaar caadr cadar caddr cdaar cdadr 
-  cddar cddr))
+  cddar cddr map apply))
 
 (define init-env         ; for now, our initial global environment only contains 
   (extend-env            ; procedure names.  Recall that an environment associates
@@ -171,10 +171,28 @@
       [(vector-set!) (vector-set! (1st args) (2nd args) (3rd args))]
       [(display) (display (1st args))]
       [(newline) (newline)]
-
+      [(map) (apply map (get-proc (1st args)) (cdr args))]
+      [(apply) (apply (get-proc (1st args)) (cadr args))]
       [else (error 'apply-prim-proc 
             "Bad primitive procedure name: ~s" 
             prim-op)])))
+
+(define get-proc
+  (lambda (proc-value)
+    (cases proc-val proc-value
+      [prim-proc (name) 
+                (lambda args (apply-prim-proc name args))
+      ]
+      [lambda-proc (proc)
+                proc
+      ]
+      [else (error 'apply-proc
+                   "Attempt to apply bad procedure: ~s" 
+                    proc-value)
+      ]
+    )
+  )
+)
 
 (define rep      ; "read-eval-print" loop.
   (lambda ()

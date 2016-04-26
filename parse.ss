@@ -85,15 +85,15 @@
 		(if (equal? (car (list-ref datum (- (length datum) 1))) 'else)
 			(cond-exp 
 				[map (lambda (x) 
-					(parse-exp (car x)) (parse-exp (cadr x))) 
-						(list-head datum (- (length datum) 2))
+					(list (parse-exp (car x)) (map parse-exp (cdr x)))) 
+						(list-head datum (- (length datum) 1))
 				]
-				[parse-exp (cadr (list-ref datum (- (length datum) 1)))]
+				[map parse-exp (cdr (list-ref datum (- (length datum) 1)))]
 			)
 			(cond-exp
 				[map (lambda (x) 
-					(parse-exp (car x)) (parse-exp (cadr x))) 
-						(list-head datum (- (length datum) 1))
+					(list (parse-exp (car x)) (map parse-exp (cdr x)))) 
+						(list-head datum (- (length datum) 2))
 				]
 				[app-exp (var-exp void) '()]
 			)			

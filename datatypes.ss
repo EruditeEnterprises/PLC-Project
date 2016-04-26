@@ -44,7 +44,7 @@
         ;)
     ;)
     )
-    (else expression?)
+    (else (list-of expression?))
   ]
   [and-exp
     (body (list-of expression?))

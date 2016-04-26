@@ -182,8 +182,8 @@
     (if (null? exp)
       (map syntax-expand elsa)
       (if-then-exp 
-        (syntax-expand (car exp)) 
-        (map syntax-expand (cadr exp)) 
+        (syntax-expand (caar exp)) 
+        (map syntax-expand (cadar exp)) 
         (cond-recursor (cdr exp) elsa)
       )
     )

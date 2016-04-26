@@ -79,7 +79,13 @@
   (lambda (exp)
     (cases expression exp
       [let-exp (type bound body)
-        (app-exp (lambda-exp (map car bound) body) (map cadr bound))
+        (cond
+          ((equal? type 'let) 
+            (app-exp (lambda-exp (map car bound) body) (map cadr bound))
+          ((equal? type 'let*)
+            (let*-recursor bound body)
+          )
+        )
       ]
       [lambda-exp (id body)
         (lambda-exp id (map syntax-expand body))
@@ -96,7 +102,66 @@
       [no-else-exp (condition true)
         (no-else-exp (syntax-expand condition) (syntax-expand true))
       ]
+      [begin-exp (body)
+        (app-exp (lambda-exp '() body) '()) 
+      ]
+      [cond-exp (conditions else)
+        (cond-recursor conditions else)
+      ]
+      [and-exp (body)
+        (and-recursor body)
+      ]
+      [or-exp (body)
+        (or-recursor body)
+      ]
+      [case-exp (key body)
+        
+      ]
       [else exp]
+    )
+  )
+)
+
+(define let*-recursor
+  (lambda (bound body)
+    (if (null? bound)
+      (syntax-expand body)
+      (app-exp 
+        (lambda-exp (caar bound) (let*-recursor (cdr bound) body))
+        (syntax-expand (cadar bound))
+      )
+    )
+  )
+)
+
+(define and-recursor
+  (lambda (exp)
+    (if (null? exp)
+      (lit-exp #t)
+      (if-then-exp (syntax-expand (car exp)) 
+        (and-recursor (cdr exp)) (lit-exp #f))
+    )
+  )
+)
+
+(define or-recursor
+  (lambda (exp)
+    (if (null? exp)
+      (lit-exp #f)
+      (if-then-exp
+        (syntax-expand (car exp)) 
+        (lit-exp #t)  
+        (or-recursor (cdr exp))
+      )
+    )
+  )
+)
+
+(define cond-recursor
+  (lambda (exp elsa)
+    (if (null? exp)
+      (map syntax-expand elsa)
+      (if-then-exp (syntax-expand (car exp)) (map syntax-expand (cadr exp)) (cond-recursor (cdr exp) elsa))
     )
   )
 )

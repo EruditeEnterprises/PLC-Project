@@ -50,6 +50,12 @@
 		    		]
 		    		[(eqv? (car datum) 'case)
 		    			(case-parse (cdr datum))
+		    		]
+		    		[(eqv? (car datum) 'while)
+		    			(while-exp 
+		    				(parse-exp (cadr datum))
+		    				(map parse-exp (cddr datum))
+		    			)
 		    		]		    				    		
 	   				[else (app-exp (parse-exp (1st datum)) (map parse-exp (cdr datum)))]
 	 			)

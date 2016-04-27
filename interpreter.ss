@@ -71,6 +71,18 @@
           (eval-exp true env)
         )
       ]
+      [while-exp (test-exp body)
+        (letrec  
+          [(while-loop 
+            (lambda ()
+              (if (eval-exp test-exp env)
+                (begin (eval-all body env) (while-loop))
+              )
+            )
+          )
+          ] (while-loop)
+        )
+      ]
       [else (eopl:error 'eval-exp "Bad abstract syntax: ~a" exp)])
   )
 )
@@ -231,7 +243,7 @@
   list? pair? procedure? vector->list vector make-vector vector-ref 
   vector? number? symbol? set-car! set-cdr! vector-set! display 
   newline caar cadr cdar cddr caaar caadr cadar caddr cdaar cdadr 
-  cddar cddr map apply void member))
+  cddar cddr map apply void member quotient))
 
 (define init-env         ; for now, our initial global environment only contains 
   (extend-env            ; procedure names.  Recall that an environment associates
@@ -301,6 +313,7 @@
       [(map) (apply map (get-proc (1st args)) (cdr args))]
       [(apply) (apply (get-proc (1st args)) (cadr args))]
       [(member) (member (1st args) (2nd args))]
+      [(quotient) (apply quotient args)]
       [else (error 'apply-prim-proc 
             "Bad primitive procedure name: ~s" 
             prim-op)])))

@@ -295,7 +295,7 @@
       [(list->vector) (list->vector (1st args))]
       [(list?) (list? (1st args))]
       [(pair?) (pair? (1st args))]
-      [(procedure?) (or (procedure? (1st args)) (proc-val? (1st args)))]
+      [(procedure?) (proc-val? (1st args))]
       [(vector->list) (vector->list (1st args))]
       [(vector) (apply vector args)] ;multiple args case
       [(make-vector) (make-vector (1st args) (2nd args))]
@@ -310,8 +310,8 @@
       [(display) (display (1st args))]
       [(newline) (newline)]
       [(void) (void)]
-      [(map) (apply map (get-proc (1st args)) (cdr args))]
-      [(apply) (apply (get-proc (1st args)) (cadr args))]
+      [(map) (map (lambda (x) (apply-proc (1st args) (list x))) (cadr args))]
+      [(apply) (apply-proc (1st args) (cadr args))]
       [(member) (member (1st args) (2nd args))]
       [(quotient) (apply quotient args)]
       [else (error 'apply-prim-proc 

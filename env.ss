@@ -1,6 +1,4 @@
 ; Environment definitions for CSSE 304 Scheme interpreter.  Based on EoPL section 2.3
-(load "interpreter.ss")
-
 (define empty-env
   (lambda ()
     (empty-env-record)))
@@ -29,6 +27,7 @@
 		 (+ 1 list-index-r)
 		 #f))))))
 
+(load "interpreter.ss")
 (define (closure body env) 
   (eval-exp body env)
 )

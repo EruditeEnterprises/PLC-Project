@@ -29,16 +29,26 @@
         )
       ]
       [let-exp (type bound body)
+        ;(let ([new-env 
+        ;        (extend-env 
+        ;          (map car bound) 
+        ;          (eval-all (map cadr bound) env)
+        ;          env
+        ;        )
+        ;      ])
+              ;(let ([bodies (eval-all body new-env)])
+              ;  (list-ref bodies (- (length bodies) 1))
+              ;)
+        ;)
         (let ([new-env 
-                (extend-env 
+                (extend-env-recursively 
                   (map car bound) 
-                  (eval-all (map cadr bound) env)
+                  (map cadr bound) 
                   env
-                )
-              ])
-              (let ([bodies (eval-all body new-env)])
-                (list-ref bodies (- (length bodies) 1))
-              )
+                )])
+          (let ([bodies (eval-all body new-env)])
+            (list-ref bodies (- (length bodies) 1))
+          )
         )
       ]
       [lambda-exp (id body)
@@ -92,7 +102,7 @@
     (cases expression exp
       [let-exp (type bound body)
         (cond
-          ((equal? type 'let) 
+          ((equal? type 'let)
             (app-exp 
               (lambda-exp 
                 (map car bound) 
@@ -104,6 +114,13 @@
 
           ((equal? type 'let*)
             (car (let*-recursor bound body))
+          )
+          ((equal? type 'letrec)
+            (let-exp 
+              type 
+              (map (lambda (x) (list (car x) (syntax-expand (cadr x)))) bound)
+              (map syntax-expand body)
+            )
           )
         )
       ]
@@ -239,11 +256,11 @@
                     proc-value)])))
 
 (define *prim-proc-names* '(+ - * / add1 sub1 zero? cons = not < > <= >= cons 
-  car cdr list null? assq eq? equal? atom? length list->vector 
+  car cdr list null? assq eq? eqv? equal? atom? length list->vector 
   list? pair? procedure? vector->list vector make-vector vector-ref 
   vector? number? symbol? set-car! set-cdr! vector-set! display 
   newline caar cadr cdar cddr caaar caadr cadar caddr cdaar cdadr 
-  cddar cddr map apply void member quotient))
+  cddar cddr map apply void member quotient list-tail))
 
 (define init-env         ; for now, our initial global environment only contains 
   (extend-env            ; procedure names.  Recall that an environment associates
@@ -289,6 +306,7 @@
       [(null?) (null? (1st args))]
       [(assq) (assq (1st args) (2nd args))]
       [(eq?) (eq? (1st args) (2nd args))]
+      [(eqv?) (eqv? (1st args) (2nd args))]
       [(equal?) (equal? (1st args) (2nd args))]
       [(atom?) (atom? (1st args))]
       [(length) (length (1st args))]
@@ -314,6 +332,7 @@
       [(apply) (apply-proc (1st args) (cadr args))]
       [(member) (member (1st args) (2nd args))]
       [(quotient) (apply quotient args)]
+      [(list-tail) (list-tail (1st args) (2nd args))]
       [else (error 'apply-prim-proc 
             "Bad primitive procedure name: ~s" 
             prim-op)])))

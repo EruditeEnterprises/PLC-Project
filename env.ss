@@ -1,4 +1,5 @@
 ; Environment definitions for CSSE 304 Scheme interpreter.  Based on EoPL section 2.3
+(load "interpreter.ss")
 
 (define empty-env
   (lambda ()
@@ -9,8 +10,8 @@
     (extended-env-record syms vals env)))
 
 (define extend-env-recursively
-  (lambda (proc-names idss bodies old-env)
-    (recursively-extended-env-record proc-names idss bodies old-env)
+  (lambda (ids bodies old-env)
+    (recursively-extended-env-record ids bodies old-env)
   )
 )
 
@@ -28,6 +29,10 @@
 		 (+ 1 list-index-r)
 		 #f))))))
 
+(define (closure body env) 
+  (eval-exp body env)
+)
+
 (define apply-env
   (lambda (env sym succeed fail) ; succeed and fail are procedures applied if the var is or isn't found, respectively.
     (cases environment env
@@ -39,12 +44,10 @@
   	        (succeed (list-ref vals pos))
   	        (apply-env env sym succeed fail)))]
       [recursively-extended-env-record
-        (procnames idss bodies old-env)
-        (let ([pos (list-find-position sym procnames)])
+        (ids bodies old-env)
+        (let ([pos (list-find-position sym ids)])
           (if (number? pos)
-            (closure (list-ref idss pos)
-              (list-ref bodies pos)
-              env)
+            (closure (list-ref bodies pos) env)
             (apply-env old-env sym succeed fail)
           )
         )

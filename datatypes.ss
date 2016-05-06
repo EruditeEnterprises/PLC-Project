@@ -29,6 +29,11 @@
     (type symbol?)
     (bound list?)
     (body (list-of expression?))]
+  [let-name
+    (name symbol?)
+    (bound list?)
+    (body (list-of expression?))
+  ]
   [begin-exp
     (body (list-of expression?))
   ]

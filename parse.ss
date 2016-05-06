@@ -148,23 +148,42 @@
 		(if (< (length datum) 3)
 	      	(eopl:error 'parse-exp
 	            "let/let*/letrec length != 3 ~s" datum)
-			(if (list? (cadr datum))
-		      	(if (andmap list? (cadr datum))
-		          	(if (andmap (lambda (ls) (equal? (length ls) 2)) (cadr datum))
-		             	(let* ([cad (map cadr (cadr datum))]
-			             		[parsed-bound (map parse-exp cad)])
-			                	(if (andmap symbol? (map car (cadr datum))) ;first thing is symbol
-			                    	(let-exp (car datum) (map list (map car (cadr datum)) parsed-bound) (map parse-exp (cddr datum)))
-			                      	(eopl:error 'parse-exp "variables putting into the andmap should be symbols ~s" datum)
-			              	)
-		              	)	
-		              	(eopl:error 'parse-exp 
-		              		"What your putting in this pair-check is not a pair of 2 ~s" (car datum) datum)
+			(cond 
+				[(list? (cadr datum))
+			      	(if (andmap list? (cadr datum))
+			          	(if (andmap (lambda (ls) (equal? (length ls) 2)) (cadr datum))
+			             	(let* ([cad (map cadr (cadr datum))]
+				             		[parsed-bound (map parse-exp cad)])
+				                	(if (andmap symbol? (map car (cadr datum))) ;first thing is symbol
+				                    	(let-exp (car datum) (map list (map car (cadr datum)) parsed-bound) (map parse-exp (cddr datum)))
+				                      	(eopl:error 'parse-exp "variables putting into the andmap should be symbols ~s" datum)
+				              	)
+			              	)	
+			              	(eopl:error 'parse-exp 
+			              		"What your putting in this pair-check is not a pair of 2 ~s" (car datum) datum)
+			            )
+			          	(eopl:error 'parse-exp
+			            	"Andmap input is not a list: error: ~s" datum)
+			        )
+			    ]
+			    [(symbol? (cadr datum))
+			        (if (andmap list? (caddr datum)) ;For the named let case.
+		                (if (andmap (lambda (ls) (equal? (length ls) 2)) (caddr datum))
+		                  (let* ([cad (map cadr (caddr datum))]
+		                      [parsed-bound (map parse-exp cad)])
+		                        (if (andmap symbol? (map car (caddr datum))) ;first thing is symbol
+		                            (let-name (cadr datum) (map list (map car (caddr datum)) parsed-bound) (map parse-exp (cdddr datum)))
+		                              (eopl:error 'parse-exp "variables putting into the andmap should be symbols ~s" datum)
+		                      )
+		                    ) 
+		                    (eopl:error 'parse-exp 
+		                      "What your putting in this pair-check is not a pair of 2 ~s" (cadr datum) datum)
+		                )
+		                (eopl:error 'parse-exp
+		                  "Andmap input is not a list: error: ~s" datum)
 		            )
-		          	(eopl:error 'parse-exp
-		            	"Andmap input is not a list: error: ~s" datum)
-		        )
-		        (eopl:error 'parse-exp "(cadr datum) is not a list, : ~s" datum)
+	            ]
+	            [else (eopl:error 'parse-exp "(cadr datum) is not a list, : ~s" datum)]
 		    )
 		)
 	)

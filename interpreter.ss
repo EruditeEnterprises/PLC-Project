@@ -124,6 +124,17 @@
           )
         )
       ]
+      [let-name (name bound body)
+        (let-exp
+          'letrec
+          (list 
+            (list name
+              (lambda-exp (map car bound) (map syntax-expand body))
+            )
+          )
+          (list (app-exp (var-exp name) (map syntax-expand (map cadr bound))))
+        )
+      ]
       [lambda-exp (id body)
         (lambda-exp id (map syntax-expand body))
       ]
@@ -260,7 +271,7 @@
   list? pair? procedure? vector->list vector make-vector vector-ref 
   vector? number? symbol? set-car! set-cdr! vector-set! display 
   newline caar cadr cdar cddr caaar caadr cadar caddr cdaar cdadr 
-  cddar cddr map apply void member quotient list-tail))
+  cddar cddr map apply void member quotient list-tail append))
 
 (define init-env         ; for now, our initial global environment only contains 
   (extend-env            ; procedure names.  Recall that an environment associates
@@ -333,6 +344,7 @@
       [(member) (member (1st args) (2nd args))]
       [(quotient) (apply quotient args)]
       [(list-tail) (list-tail (1st args) (2nd args))]
+      [(append) (apply append args)]
       [else (error 'apply-prim-proc 
             "Bad primitive procedure name: ~s" 
             prim-op)])))

@@ -29,17 +29,6 @@
         )
       ]
       [let-exp (type bound body)
-        ;(let ([new-env 
-        ;        (extend-env 
-        ;          (map car bound) 
-        ;          (eval-all (map cadr bound) env)
-        ;          env
-        ;        )
-        ;      ])
-              ;(let ([bodies (eval-all body new-env)])
-              ;  (list-ref bodies (- (length bodies) 1))
-              ;)
-        ;)
         (let ([new-env 
                 (extend-env-recursively 
                   (map car bound) 

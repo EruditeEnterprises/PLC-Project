@@ -193,8 +193,6 @@
 	(lambda (parsed-exp)
 		(cases expression parsed-exp
 			(var-exp (id) id)
-			;(num-exp (id) id)
-			;(vec-exp (id) id)
 			(lit-exp (id) id)
 			(lambda-exp (id body)
 				(append (list 'lambda id) (map unparse-exp body))

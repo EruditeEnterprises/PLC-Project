@@ -40,14 +40,6 @@
   [cond-exp
     (conditions
       list? 
-      ;(list? 
-        ;(lambda (x) 
-        ;  (and 
-        ;    (expression? (car x))
-        ;    (list? (cadr x))
-        ;  )
-        ;)
-    ;)
     )
     (else (list-of expression?))
   ]

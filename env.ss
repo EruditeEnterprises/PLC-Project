@@ -58,9 +58,9 @@
 (define replace-index
   (lambda (ls pos new)
     (cond 
-      [(null? ls) '()]
-      [(= pos 0) (cons new (cdr ls))]
-      [else (cons (car ls) (replace-index (cdr ls) (- pos 1) new))]
+      [(null? ls) (void)]
+      [(= pos 0) (set-car! ls new)]
+      [else (replace-index (cdr ls) (- pos 1) new)]
     )
   )
 )
@@ -68,17 +68,14 @@
   (lambda (env sym exp succeed fail)
     (cases environment env
       [empty-env-record ()
-        (fail env)
+        (fail)
       ]
       [extended-env-record (syms vals old-env)
         (let ([pos (list-find-position sym syms)])
           (if (number? pos)
-            (succeed (extended-env-record syms 
-                        (replace-index 
-                          vals 
-                          pos 
-                          (eval-exp (car exp) (cadr exp))
-                        ) old-env)
+            (begin
+              (succeed)
+              (replace-index vals pos (eval-exp (car exp) (cadr exp)))
             )
             (set-in-env! old-env sym exp succeed fail)
           )
@@ -88,12 +85,9 @@
         (ids bodies old-env)
         (let ([pos (list-find-position sym ids)])
           (if (number? pos)
-            (succeed (recursively-extended-env-record ids 
-                          (replace-index 
-                            bodies 
-                            pos 
-                            (car exp)
-                          ) old-env)
+            (begin
+              (succeed)
+              (replace-index vals pos (car exp))
             )
             (set-in-env! old-env sym exp succeed fail)
           )

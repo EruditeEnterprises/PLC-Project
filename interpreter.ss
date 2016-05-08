@@ -1,9 +1,36 @@
+(define *prim-proc-names* '(+ - * / add1 sub1 zero? cons = not < > <= >= cons 
+  car cdr list null? assq eq? eqv? equal? atom? length list->vector 
+  list? pair? procedure? vector->list vector make-vector vector-ref 
+  vector? number? symbol? set-car! set-cdr! vector-set! display 
+  newline caar cadr cdar cddr caaar caadr cadar caddr cdaar cdadr 
+  cddar cddr map apply void member quotient list-tail append))
+
+(define make-init-env         ; for now, our initial global environment only contains 
+  (lambda ()
+    (extend-env            ; procedure names.  Recall that an environment associates
+     *prim-proc-names*   ;  a value (not an expression) with an identifier.
+     (map prim-proc      
+          *prim-proc-names*)
+     (empty-env))
+  )
+)
+
+(define global-env
+  (make-init-env)
+)
+
+(define reset-global-env
+  (lambda () 
+    (set! global-env (make-init-env))
+  )
+)
+
 ; top-level-eval evaluates a form in the global environment
 
 (define top-level-eval
   (lambda (form)
     ; later we may add things that are not expressions.
-    (eval-exp form init-env)))
+    (eval-exp form global-env)))
 
 ; eval-exp is the main component of the interpreter
 
@@ -84,10 +111,9 @@
       ]
       [set!-exp (id body)
         (set-in-env! env id (list body env)
-          (lambda (x) x) 
-          (lambda (y) (eopl:error 'set-in-env! ; procedure to call if id not in env
+          void 
+          (lambda () (eopl:error 'set-in-env! ; procedure to call if id not in env
               "variable not found in environment: ~s" id)
-              y
           )
         )
       ]
@@ -267,20 +293,6 @@
                    "Attempt to apply bad procedure: ~s" 
                     proc-value)])))
 
-(define *prim-proc-names* '(+ - * / add1 sub1 zero? cons = not < > <= >= cons 
-  car cdr list null? assq eq? eqv? equal? atom? length list->vector 
-  list? pair? procedure? vector->list vector make-vector vector-ref 
-  vector? number? symbol? set-car! set-cdr! vector-set! display 
-  newline caar cadr cdar cddr caaar caadr cadar caddr cdaar cdadr 
-  cddar cddr map apply void member quotient list-tail append))
-
-(define init-env         ; for now, our initial global environment only contains 
-  (extend-env            ; procedure names.  Recall that an environment associates
-     *prim-proc-names*   ;  a value (not an expression) with an identifier.
-     (map prim-proc      
-          *prim-proc-names*)
-     (empty-env)))
-
 ; Usually an interpreter must define each 
 ; built-in procedure individually.  We are "cheating" a little bit.
 (define apply-prim-proc
@@ -380,7 +392,7 @@
 (define eval-one-exp
   (lambda (x) 
     ;(top-level-eval (parse-exp x))
-    (eval-exp (syntax-expand (parse-exp x)) init-env)
+    (eval-exp (syntax-expand (parse-exp x)) global-env)
   )
 )
 

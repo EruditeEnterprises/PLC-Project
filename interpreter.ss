@@ -82,6 +82,15 @@
           ] (while-loop)
         )
       ]
+      [set!-exp (id body)
+        (set-in-env! env id (list body env)
+          (lambda (x) x) 
+          (lambda (y) (eopl:error 'set-in-env! ; procedure to call if id not in env
+              "variable not found in environment: ~s" id)
+              y
+          )
+        )
+      ]
       [else (eopl:error 'eval-exp "Bad abstract syntax: ~a" exp)])
   )
 )
@@ -153,6 +162,9 @@
       ]
       [case-exp (key body else)
         (case-recursor (syntax-expand key) body else)
+      ]
+      [set!-exp (id body)
+        (set!-exp id (syntax-expand body))
       ]
       [else exp]
     )

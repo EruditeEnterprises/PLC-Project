@@ -56,6 +56,13 @@
 		    				(parse-exp (cadr datum))
 		    				(map parse-exp (cddr datum))
 		    			)
+		    		]
+		    		[(eqv? (car datum) 'define)
+		    			(define-exp
+		    				;(parse-exp (cadr datum))
+		    				(cadr datum)
+		    				(map parse-exp (cddr datum))
+		    			)
 		    		]		    				    		
 	   				[else (app-exp (parse-exp (1st datum)) (map parse-exp (cdr datum)))]
 	 			)

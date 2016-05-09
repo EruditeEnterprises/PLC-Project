@@ -7,7 +7,7 @@
 
 (define make-init-env         ; for now, our initial global environment only contains 
   (lambda ()
-    (extend-env            ; procedure names.  Recall that an environment associates
+    (extend-env-recursively            ; procedure names.  Recall that an environment associates
      *prim-proc-names*   ;  a value (not an expression) with an identifier.
      (map prim-proc      
           *prim-proc-names*)
@@ -117,7 +117,30 @@
           )
         )
       ]
+      [define-exp (id bodies)
+        (add-to-global 
+          id
+          (app-exp (lambda-exp '() bodies) '())
+        )
+      ]
       [else (eopl:error 'eval-exp "Bad abstract syntax: ~a" exp)])
+  )
+)
+
+(define (add-to-global id bodies)
+  (cases environment global-env
+    [recursively-extended-env-record  (proc-names body env)
+      (set! global-env 
+        (extend-env-recursively 
+          (cons id proc-names)
+          (cons bodies body)
+          env
+        )
+      )
+    ]
+    [else 
+      (eopl:error 'add-to-global "Global environment corrupted")
+    ]
   )
 )
 
@@ -191,6 +214,9 @@
       ]
       [set!-exp (id body)
         (set!-exp id (syntax-expand body))
+      ]
+      [define-exp (id bodies)
+        (define-exp id (map syntax-expand bodies))
       ]
       [else exp]
     )

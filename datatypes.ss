@@ -57,7 +57,11 @@
   [while-exp
     (test-exp expression?)
     (body list?)
-  ]  
+  ]
+  [define-exp
+    (name symbol?)
+    (body (list-of expression?))
+  ]
 )
 
 (define (literal? id)
@@ -98,7 +102,7 @@
    (env environment?)]
    [recursively-extended-env-record
     (proc-names (list-of symbol?))
-    (bodies (list-of expression?))
+    (bodies list?)
     (env environment?)]
  )
 

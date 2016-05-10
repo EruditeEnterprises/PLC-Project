@@ -46,7 +46,7 @@
         (ids bodies old-env)
         (let ([pos (list-find-position sym ids)])
           (if (number? pos)
-            (if (proc-val? (list-ref bodies pos))
+            (if (not (expression? (list-ref bodies pos)))
               (list-ref bodies pos)
               (closure (list-ref bodies pos) env)
             )
@@ -90,7 +90,7 @@
           (if (number? pos)
             (begin
               (succeed)
-              (replace-index bodies pos (parse-exp exp))
+              (replace-index bodies pos exp)
             )
             (set-in-env! old-env sym exp succeed fail)
           )

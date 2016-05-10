@@ -110,7 +110,7 @@
         )
       ]
       [set!-exp (id body)
-        (set-in-env! env id (list body env)
+        (set-in-env! env id (eval-exp body env)
           void 
           (lambda () (eopl:error 'set-in-env! ; procedure to call if id not in env
               "variable not found in environment: ~s" id)
@@ -127,16 +127,26 @@
   )
 )
 
-(define (add-to-global id bodies)
+(define (clone element)
+  (map (lambda (x) x) element)
+)
+
+(define (add-to-global id body)
   (cases environment global-env
-    [recursively-extended-env-record  (proc-names body env)
-      (set! global-env 
-        (extend-env-recursively 
-          (cons id proc-names)
-          (cons bodies body)
-          env
-        )
+    [recursively-extended-env-record  (proc-names bodies env)
+      (let ([name-clone (clone proc-names)] [bodies-clone (clone bodies)])
+        (set-cdr! bodies bodies-clone)
+        (set-car! bodies body)
+        (set-cdr! proc-names name-clone)
+        (set-car! proc-names id)
       )
+      ;(set! global-env 
+      ;  (extend-env-recursively 
+      ;    (cons id proc-names)
+      ;    (cons bodies body)
+      ;    env
+      ;  )
+      ;)
     ]
     [else 
       (eopl:error 'add-to-global "Global environment corrupted")

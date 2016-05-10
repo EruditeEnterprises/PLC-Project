@@ -78,7 +78,7 @@
           (if (number? pos)
             (begin
               (succeed)
-              (replace-index vals pos (eval-exp (car exp) (cadr exp)))
+              (replace-index vals pos exp)
             )
             (set-in-env! old-env sym exp succeed fail)
           )
@@ -90,7 +90,7 @@
           (if (number? pos)
             (begin
               (succeed)
-              (replace-index vals pos (car exp))
+              (replace-index bodies pos (parse-exp exp))
             )
             (set-in-env! old-env sym exp succeed fail)
           )

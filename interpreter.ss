@@ -50,9 +50,17 @@
               [args (eval-all rands env)])
           (apply-proc proc-value args))]
       [if-then-exp (condition true false)
-        (if (eval-exp condition env)
+        (if (eq? condition true)
+          (let ([first (eval-exp condition env)])
+            (if first
+              first
+              (eval-exp false env)
+            )
+          )
+          (if (eval-exp condition env)
                   (eval-exp true env)
                   (eval-exp false env)
+          )
         )
       ]
       [let-exp (type bound body)
@@ -272,10 +280,12 @@
   (lambda (exp)
     (if (null? exp)
       (lit-exp #f)
-      (if-then-exp
-        (syntax-expand (car exp)) 
-        (syntax-expand (car exp))  
-        (or-recursor (cdr exp))
+      (let ([current (syntax-expand (car exp))])
+        (if-then-exp
+          current
+          current 
+          (or-recursor (cdr exp))
+        )
       )
     )
   )

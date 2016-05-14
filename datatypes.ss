@@ -62,6 +62,7 @@
   ]
   [ref-exp
     (id symbol?)
+    (env environment?)
   ]
 )
 

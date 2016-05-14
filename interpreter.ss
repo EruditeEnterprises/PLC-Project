@@ -39,16 +39,23 @@
     (cases expression exp
       [lit-exp (datum) datum]
       [var-exp (id)
-        (apply-env env id; look up its value.
-          (lambda (x) x) ; procedure to call if id is in the environment 
-           (lambda () (eopl:error 'apply-env ; procedure to call if id not in env
-              "variable not found in environment: ~s"
-         id)))
+        (let ([val (apply-env env id; look up its value.
+                (lambda (x) x) ; procedure to call if id is in the environment 
+                 (lambda () (eopl:error 'apply-env ; procedure to call if id not in env
+                    "variable not found in environment: ~s"
+               id)))])
+          (if (expression? val)
+            (eval-exp val env)
+            val
+          )
+        )
+        
       ]
       [app-exp (rator rands)
-        (let ([proc-value (eval-exp rator env)]
-              [args (eval-all rands env)])
-          (apply-proc proc-value args))]
+        (let ([proc-value (eval-exp rator env)] [args (eval-all-with-ref rands env)])
+            (apply-proc proc-value args env)
+        )
+      ]  
       [if-then-exp (condition true false)
         (if (eq? condition true)
           (let ([first (eval-exp condition env)])
@@ -77,26 +84,30 @@
       ]
       [lambda-exp (id body)
         (lambda-proc (lambda (args) 
-          (let ([new-env (extend-env id args env)])
-            (let ([bodies (eval-all body new-env)])
+          (let* ([conv-refs (convert-refs id args env)]
+                 [new-env (extend-env (car conv-refs) (cadr conv-refs) env)]
+                 [bodies (eval-all body new-env)]) 
               (list-ref bodies (- (length bodies) 1))
-            )
           ))
         )
       ]
       [lambda-spec-exp (indiv rest body)
         (lambda-proc (lambda (args)
-          (let 
-            ([new-env 
-              (extend-env 
-                (append indiv (list rest))
-                (split-vals args (length indiv))
-                env
-              )
-            ])
-              (let ([bodies (eval-all body new-env)])
-                (list-ref bodies (- (length bodies) 1))
-              )
+          (let* (
+            [split (split-vals args (length indiv))]
+            [conv-refs (convert-refs indiv args env)]
+            [new-env 
+             (extend-env 
+               (append (car conv-refs) (list rest))
+               (append 
+                 (cadr conv-refs) 
+                 (clear-refs (list (list-ref split (- (length split) 1))) env)
+               )
+               env
+             )
+            ]
+            [bodies (eval-all body new-env)])
+            (list-ref bodies (- (length bodies) 1))
           ))
         )
       ]
@@ -118,10 +129,17 @@
         )
       ]
       [set!-exp (id body)
-        (set-in-env! env id (eval-exp body env)
-          void 
-          (lambda () (eopl:error 'set-in-env! ; procedure to call if id not in env
-              "variable not found in environment: ~s" id)
+        (let ([id-ref (apply-env env id (lambda (x) x) (lambda () '()))])
+          (if (expression? id-ref)
+            (cases expression id-ref
+              [ref-exp (new-id ref-env)
+                (set-eval! ref-env new-id (eval-exp body env))
+              ]
+              [else 
+                (set-eval! env id (eval-exp body env))
+              ]
+            )            
+            (set-eval! env id (eval-exp body env))
           )
         )
       ]
@@ -131,12 +149,75 @@
           (app-exp (lambda-exp '() bodies) '())
         )
       ]
+      [ref-exp (id own-env)
+        (apply-env own-env id; look up its value.
+          (lambda (x) x) ; procedure to call if id is in the environment 
+           (lambda () (eopl:error 'apply-env ; procedure to call if id not in env
+              "variable not found in environment: ~s"
+         id)))
+      ]
       [else (eopl:error 'eval-exp "Bad abstract syntax: ~a" exp)])
+  )
+)
+
+(define (eval-all-with-ref rands env)
+  (if (null? rands)
+    '()
+    (let ([x (cases expression (car rands)
+              [var-exp (id)
+                (let ([val 
+                        (apply-env env id; look up its value.
+                          (lambda (x) x) ; procedure to call if id is in the environment 
+                           (lambda () '()))])
+                  (if (expression? val)
+                    val
+                    (ref-exp id env)
+                  )
+                )
+              ]
+              [else
+                (eval-exp (car rands) env)
+              ]
+         )])
+      (cons x (eval-all-with-ref (cdr rands) env))
+    )
   )
 )
 
 (define (clone element)
   (map (lambda (x) x) element)
+)
+
+(define (convert-refs ids args env);Check ordering
+  (if (null? ids)
+    (list '()' '())
+    (let ([rest (convert-refs (cdr ids) (cdr args) env)])
+      (if (list? (car ids))
+        (list 
+          (cons (cadar ids) (car rest)) 
+          (cons (car args) (cadr rest))
+        )
+        (if (expression? (car args))
+          (list 
+            (cons (car ids) (car rest)) 
+            (cons (eval-exp (car args) env) (cadr rest))
+          )
+          (list
+            (cons (car ids) (car rest)) 
+            (cons (car args) (cadr rest))
+          )
+        )
+      )
+    )
+  )
+)
+(define (set-eval! env id body)
+  (set-in-env! env id body
+    void 
+    (lambda () (eopl:error 'set-in-env! ; procedure to call if id not in env
+        "variable not found in environment: ~s" id)
+    )
+  )
 )
 
 (define (add-to-global id body)
@@ -148,13 +229,6 @@
         (set-cdr! proc-names name-clone)
         (set-car! proc-names id)
       )
-      ;(set! global-env 
-      ;  (extend-env-recursively 
-      ;    (cons id proc-names)
-      ;    (cons bodies body)
-      ;    env
-      ;  )
-      ;)
     ]
     [else 
       (eopl:error 'add-to-global "Global environment corrupted")
@@ -324,15 +398,23 @@
   )
 )
     
-
+(define (clear-refs args env)
+  (map (lambda (x) 
+        (if (expression? x)
+          (eval-exp x env)
+          x
+        ))
+    args
+  )
+)
 ;  Apply a procedure to its arguments.
 ;  At this point, we only have primitive procedures.  
 ;  User-defined procedures will be added later.
 
 (define apply-proc
-  (lambda (proc-value args)
+  (lambda (proc-value args env)
     (cases proc-val proc-value
-      [prim-proc (op) (apply-prim-proc op args)]
+      [prim-proc (op) (apply-prim-proc op (clear-refs args env) env)]
       [lambda-proc (proc) (proc args)]
 			; You will add other cases
       [else (error 'apply-proc
@@ -342,7 +424,7 @@
 ; Usually an interpreter must define each 
 ; built-in procedure individually.  We are "cheating" a little bit.
 (define apply-prim-proc
-  (lambda (prim-proc args)
+  (lambda (prim-proc args env)
     (case prim-proc
       [(+) (apply + args)]
       [(-) (apply - args)]
@@ -398,8 +480,8 @@
       [(display) (display (1st args))]
       [(newline) (newline)]
       [(void) (void)]
-      [(map) (map (lambda (x) (apply-proc (1st args) (list x))) (cadr args))]
-      [(apply) (apply-proc (1st args) (cadr args))]
+      [(map) (map (lambda (x) (apply-proc (1st args) (list x) env)) (cadr args))]
+      [(apply) (apply-proc (1st args) (cadr args) env)]
       [(member) (member (1st args) (2nd args))]
       [(quotient) (apply quotient args)]
       [(list-tail) (list-tail (1st args) (2nd args))]
@@ -409,10 +491,10 @@
             prim-op)])))
 
 (define get-proc
-  (lambda (proc-value)
+  (lambda (proc-value env)
     (cases proc-val proc-value
       [prim-proc (name) 
-                (lambda args (apply-prim-proc name args))
+                (lambda args (apply-prim-proc name args env))
       ]
       [lambda-proc (proc)
                 proc

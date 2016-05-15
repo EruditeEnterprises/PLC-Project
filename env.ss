@@ -8,8 +8,8 @@
     (extended-env-record syms vals env)))
 
 (define extend-env-recursively
-  (lambda (ids bodies old-env)
-    (recursively-extended-env-record ids bodies old-env)
+  (lambda (ids bodies old-env k)
+    (apply-k k (recursively-extended-env-record ids bodies old-env))
   )
 )
 

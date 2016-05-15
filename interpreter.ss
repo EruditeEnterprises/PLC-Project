@@ -25,13 +25,6 @@
   )
 )
 
-;For CPS
-(define apply-k
-  (lambda (k v)
-    (k v)
-  )
-)
-
 ; top-level-eval evaluates a form in the global environment
 (define top-level-eval
   (lambda (form)
@@ -96,14 +89,23 @@
         )
       ]
       [let-exp (type bound body)
-        (let ([new-env 
-                (extend-env-recursively 
-                  (map car bound) 
-                  (map cadr bound) 
-                  env
-                )])
-          (let ([bodies (eval-all body new-env)])
-            (list-ref bodies (- (length bodies) 1))
+        ;(let ([new-env 
+        ;        (extend-env-recursively 
+        ;          (map car bound) 
+        ;          (map cadr bound) 
+        ;          env
+        ;        )])
+        ;  (let ([bodies (eval-all body new-env)])
+        ;    (list-ref bodies (- (length bodies) 1))
+        ;  )
+        ;)
+        (extend-env-recursively (map car bound) (map cadr bound)
+          (lambda (new-env)
+            (eval-all body new-env 
+              (lambda (bodies)
+                (list-ref bodies (- (length bodies) 1))
+              )
+            )
           )
         )
       ]

@@ -165,8 +165,15 @@
         )
       ]
       [no-else-exp (condition true)
-        (if (eval-exp condition env)
-          (eval-exp true env)
+        ;(if (eval-exp condition env)
+        ;  (eval-exp true env)
+        ;)
+        (eval-exp condition env ;Not sure about this one
+          (lambda (answer)
+            (if answer
+              (eval-exp true env k)
+            )
+          )
         )
       ]
       [while-exp (test-exp body)
@@ -179,6 +186,7 @@
             )
           )
           ] (while-loop)
+
         )
       ]
       [set!-exp (id body)

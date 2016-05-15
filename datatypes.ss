@@ -6,17 +6,17 @@
   [var-exp
     (id symbol?)]
   [lambda-exp
-    (id list?)
+    (id (list-of symbol?))
     (body (list-of expression?))]
   [lambda-spec-exp
-    (indiv-syms list?)
+    (indiv-syms (list-of symbol?))
     (rest-sym symbol?)
     (body list?)]
   [app-exp
     (rator expression?)
     (rand list?)]
   [set!-exp
-    (id (lambda (x) (or (symbol? x) (expression? x))))
+    (id symbol?)
     (body expression?)]
   [if-then-exp
     (condition expression?)
@@ -38,7 +38,9 @@
     (body (list-of expression?))
   ]
   [cond-exp
-    (conditions list?)
+    (conditions
+      list? 
+    )
     (else (list-of expression?))
   ]
   [and-exp
@@ -60,10 +62,6 @@
     (name symbol?)
     (body (list-of expression?))
   ]
-  [ref-exp
-    (id symbol?)
-    (env environment?)
-  ]
 )
 
 (define (literal? id)
@@ -73,8 +71,7 @@
     (string? id) 
     (symbol? id)
     (pair? id)
-    (vector? id)
-  )
+    (vector? id))
 )
 
 (define (sym-or-ls? arg) ;This helps for dealing with the 2 different lambdas

@@ -122,11 +122,11 @@
       		(eopl:error 'parse-exp "lambda-parse: length < 3 ~s" datum)
 			(cond 
 				[(list? (2nd datum)) 
-	      			(if (andmap (lambda (x) (or (symbol? x) (list? x))) (2nd datum)) 
+	      			(if (andmap symbol? (2nd datum)) 
 						(lambda-exp (2nd datum) (map parse-exp (cddr datum)))
 			        	(eopl:error 'parse-exp
 	              			"error in passing args to lambda ~s they need 
-	              				to be symbols or references" datum)
+	              				to be symbols" datum)
 					)
 				]
 				[(symbol? (2nd datum))

@@ -26,14 +26,12 @@
 )
 
 ; top-level-eval evaluates a form in the global environment
-
 (define top-level-eval
   (lambda (form)
     ; later we may add things that are not expressions.
     (eval-exp form global-env)))
 
 ; eval-exp is the main component of the interpreter
-
 (define eval-exp
   (lambda (exp env)
     (cases expression exp
@@ -148,13 +146,6 @@
         (set-cdr! proc-names name-clone)
         (set-car! proc-names id)
       )
-      ;(set! global-env 
-      ;  (extend-env-recursively 
-      ;    (cons id proc-names)
-      ;    (cons bodies body)
-      ;    env
-      ;  )
-      ;)
     ]
     [else 
       (eopl:error 'add-to-global "Global environment corrupted")
@@ -312,7 +303,6 @@
 )
 
 ; evaluate the list of operands, putting results into a list
-
 (define eval-all
   (lambda (rands env)
     (if (null? rands)
@@ -435,7 +425,6 @@
 
 (define eval-one-exp
   (lambda (x) 
-    ;(top-level-eval (parse-exp x))
     (top-level-eval (syntax-expand (parse-exp x)))
   )
 )

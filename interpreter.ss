@@ -328,7 +328,6 @@
 ;  Apply a procedure to its arguments.
 ;  At this point, we only have primitive procedures.  
 ;  User-defined procedures will be added later.
-
 (define apply-proc
   (lambda (proc-value args)
     (cases proc-val proc-value
@@ -393,7 +392,6 @@
       [(symbol?) (symbol? (1st args))]
       [(set-car!) (set-car! (1st args) (2nd args))]
       [(set-cdr!) (set-cdr! (1st args) (2nd args))]
-      ;[(vector-set!) (vector-set! (1st args) (2nd args) (3rd args))]
       [(vector-set!) (apply vector-set! args)]
       [(display) (display (1st args))]
       [(newline) (newline)]
@@ -429,7 +427,7 @@
   (lambda ()
     (display "--> ")
     ;; notice that we don't save changes to the environment...
-    (let ([answer (top-level-eval (parse-exp (read)))])
+    (let ([answer (top-level-eval (syntax-expand (parse-exp (read))))])
       ;; TODO: are there answers that should display differently?
       (eopl:pretty-print answer) (newline)
       (rep))))  ; tail-recursive, so stack doesn't grow.
@@ -438,7 +436,7 @@
 (define eval-one-exp
   (lambda (x) 
     ;(top-level-eval (parse-exp x))
-    (eval-exp (syntax-expand (parse-exp x)) global-env)
+    (top-level-eval (syntax-expand (parse-exp x)))
   )
 )
 

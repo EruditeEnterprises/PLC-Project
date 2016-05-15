@@ -1,3 +1,5 @@
+(load "main.ss")
+(newline)
 (load "A13-test-code.ss")
 (display "A13-tests: ")
 (newline)

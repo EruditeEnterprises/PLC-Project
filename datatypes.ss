@@ -38,9 +38,7 @@
     (body (list-of expression?))
   ]
   [cond-exp
-    (conditions
-      list? 
-    )
+    (conditions list?)
     (else (list-of expression?))
   ]
   [and-exp

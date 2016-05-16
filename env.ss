@@ -91,7 +91,7 @@
           (lambda (pos)
             (if (number? pos)
               (if (not (expression? (list-ref bodies pos)))
-                (apply-k k (list-ref bodies pos))
+                (apply-k succeed (list-ref bodies pos))
                 (closure (list-ref bodies pos) env succeed)
               )
               (apply-env old-env sym succeed fail)

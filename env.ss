@@ -150,7 +150,7 @@
         (list-find-position sym ids 
           (lambda (pos)
             (if (number? pos)
-              (replace-index vals pos exp k)
+              (replace-index ids pos exp k)
               (set-in-env! old-env sym exp k fail)
             )
           )

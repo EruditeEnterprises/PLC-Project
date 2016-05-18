@@ -177,9 +177,8 @@
 	     (eval-one-exp ' (- 7 (if (exit-list 3) 4 5)))
 	     (eval-one-exp '(call/cc (lambda (k) (+ 100 (exit-list (+ 3 (k 12)))))))
 	     (eval-one-exp '(call/cc (lambda (k) (+ 100 (k (+ 3 (exit-list 12))))))))
-)])
+])
       (display-results correct answers equal?)))
-
 
 
 

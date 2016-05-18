@@ -31,7 +31,7 @@
 (define top-level-eval
   (lambda (form)
     ; later we may add things that are not expressions.
-    (eval-exp form global-env (lambda (x) x))))
+    (eval-exp form global-env (init-k))))
 
 ; eval-exp is the main component of the interpreter
 (define eval-exp

@@ -78,7 +78,6 @@
 
 ; datatype for procedures.  At first there is only one
 ; kind of procedure, but more kinds will be added later.
-
 (define-datatype proc-val proc-val?
   [prim-proc
    (name symbol?)]
@@ -86,7 +85,6 @@
     (proc procedure?)
   ]
 )
-	 
 	
 ; environment type definitions
 (define scheme-value?
@@ -102,5 +100,16 @@
     (proc-names (list-of symbol?))
     (bodies list?)
     (env environment?)]
- )
+)
+
+(define cont-or-proc?
+  (lambda (x) 
+    (or (continuation? x) (procedure? x))
+  )
+)
+
+(define-datatype continuation continuation?
+  [init-k]
+  [append-k (the-car symbol?) (k cont-or-proc?)]
+)
 

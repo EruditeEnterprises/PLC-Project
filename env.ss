@@ -128,7 +128,7 @@
         ;    (set-in-env! old-env sym exp k fail)
         ;  )
         ;)
-        (list-find-position sym sym 
+        (list-find-position sym syms 
           (lambda (pos)
             (if (number? pos)
               (replace-index vals pos exp k)

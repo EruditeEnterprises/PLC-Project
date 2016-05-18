@@ -31,11 +31,21 @@
 	(r)
 	(newline)
 )
+
+(define (test-18)	
+	(load "A18-test-code.ss")
+	(display "A18-tests: ")
+	(newline)
+	(r)
+	(newline)
+)
+
 (define (run-all)
 	(test-13)
 	(test-14)
 	(test-16)
 	(test-17)
+	(test-18)
 )
 
 (define run 
@@ -47,6 +57,7 @@
 				((14) (test-14))
 				((16) (test-16))
 				((17) (test-17))
+				((18) (test-18))
 				(else (eopl:error 'test.ss "test not included: ~s"))
 			)
 		]

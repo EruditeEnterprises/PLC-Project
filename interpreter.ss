@@ -112,20 +112,22 @@
         )
       ]
       [lambda-exp (id body)
-        (lambda-proc 
-          (lambda (args k) 
-            ;(let ([new-env (extend-env id args env)])
-            ;  (let ([bodies (eval-all body new-env)])
-            ;    (list-ref bodies (- (length bodies) 1))
-            ;  )
-            ;)
-            (extend-env id args env
-              (lambda (new-env)
-                (eval-all body new-env
-                  (lambda (bodies)
-                    (apply-k 
-                      k 
-                      (list-ref bodies (- (length bodies) 1)))
+        (apply-k k
+          (lambda-proc 
+            (lambda (args k) 
+              ;(let ([new-env (extend-env id args env)])
+              ;  (let ([bodies (eval-all body new-env)])
+              ;    (list-ref bodies (- (length bodies) 1))
+              ;  )
+              ;)
+              (extend-env id args env
+                (lambda (new-env)
+                  (eval-all body new-env
+                    (lambda (bodies)
+                      (apply-k 
+                        k 
+                        (list-ref bodies (- (length bodies) 1)))
+                    )
                   )
                 )
               )
@@ -134,29 +136,31 @@
         )
       ]
       [lambda-spec-exp (indiv rest body)
-        (lambda-proc 
-          (lambda (args k)
-            ;(let 
-            ;  ([new-env 
-            ;    (extend-env 
-            ;      (append indiv (list rest))
-            ;      (split-vals args (length indiv))
-            ;      env
-            ;    )
-            ;  ])
-            ;    (let ([bodies (eval-all body new-env)])
-            ;      (list-ref bodies (- (length bodies) 1))
-            ;    )
-            ;)
-            (split-vals args (length indiv) env 
-              (lambda (split)
-                (extend-env (append indiv (list rest)) split env
-                  (lambda (new-env)
-                    (eval-all body new-env
-                      (lambda (bodies)
-                        (apply-k 
-                          k 
-                          (list-ref bodies (- (length bodies) 1)))
+        (apply-k k
+          (lambda-proc 
+            (lambda (args k)
+              ;(let 
+              ;  ([new-env 
+              ;    (extend-env 
+              ;      (append indiv (list rest))
+              ;      (split-vals args (length indiv))
+              ;      env
+              ;    )
+              ;  ])
+              ;    (let ([bodies (eval-all body new-env)])
+              ;      (list-ref bodies (- (length bodies) 1))
+              ;    )
+              ;)
+              (split-vals args (length indiv) env 
+                (lambda (split)
+                  (extend-env (append indiv (list rest)) split env
+                    (lambda (new-env)
+                      (eval-all body new-env
+                        (lambda (bodies)
+                          (apply-k 
+                            k 
+                            (list-ref bodies (- (length bodies) 1)))
+                        )
                       )
                     )
                   )

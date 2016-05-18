@@ -139,19 +139,7 @@
         (apply-k k
           (lambda-proc 
             (lambda (args k)
-              ;(let 
-              ;  ([new-env 
-              ;    (extend-env 
-              ;      (append indiv (list rest))
-              ;      (split-vals args (length indiv))
-              ;      env
-              ;    )
-              ;  ])
-              ;    (let ([bodies (eval-all body new-env)])
-              ;      (list-ref bodies (- (length bodies) 1))
-              ;    )
-              ;)
-              (split-vals args (length indiv) env 
+              (split-vals args (length indiv) 
                 (lambda (split)
                   (extend-env (append indiv (list rest)) split env
                     (lambda (new-env)

@@ -166,6 +166,7 @@
           (lambda (answer)
             (if answer
               (eval-exp true env k)
+              (apply-k k (void))
             )
           )
         )

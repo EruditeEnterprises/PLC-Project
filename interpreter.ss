@@ -66,15 +66,8 @@
           ;        (eval-exp false env)
           ;)
         (if (eq? condition true)
-          (eval-exp condition env
-            (lambda (first)
-              (if first
-                (apply-k k first)
-                (eval-exp false env k)
-              )
-            )
-          )
-          (eval-exp condition env (test-k true false env k))
+          (eval-exp condition env (if-spec-k false env k))
+          (eval-exp condition env (if-else-k true false env k))
         )
       ]
       [let-exp (type bound body)
@@ -88,14 +81,11 @@
         ;    (list-ref bodies (- (length bodies) 1))
         ;  )
         ;)
-        (extend-env-recursively (map car bound) (map cadr bound) env
-          (lambda (new-env)
-            (eval-all body new-env 
-              (lambda (bodies)
-                (apply-k k (list-ref bodies (- (length bodies) 1)))
-              )
-            )
-          )
+        (extend-env-recursively 
+          (map car bound) 
+          (map cadr bound) 
+          env
+          (new-env-k body k)
         )
       ]
       [lambda-exp (id body)
@@ -107,17 +97,7 @@
               ;    (list-ref bodies (- (length bodies) 1))
               ;  )
               ;)
-              (extend-env id args env
-                (lambda (new-env)
-                  (eval-all body new-env
-                    (lambda (bodies)
-                      (apply-k 
-                        k 
-                        (list-ref bodies (- (length bodies) 1)))
-                    )
-                  )
-                )
-              )
+              (extend-env id args env (new-env-k body k))
             )
           )
         )
@@ -127,19 +107,7 @@
           (lambda-proc 
             (lambda (args k)
               (split-vals args (length indiv) 
-                (lambda (split)
-                  (extend-env (append indiv (list rest)) split env
-                    (lambda (new-env)
-                      (eval-all body new-env
-                        (lambda (bodies)
-                          (apply-k 
-                            k 
-                            (list-ref bodies (- (length bodies) 1)))
-                        )
-                      )
-                    )
-                  )
-                )
+                (split-k indiv rest body env k)
               )
             )
           )
@@ -149,14 +117,7 @@
         ;(if (eval-exp condition env)
         ;  (eval-exp true env)
         ;)
-        (eval-exp condition env ;Not sure about this one
-          (lambda (answer)
-            (if answer
-              (eval-exp true env k)
-              (apply-k k (void))
-            )
-          )
-        )
+        (eval-exp condition env (no-else-k true env k))
       ]
       [while-exp (test-exp body)
         (letrec  

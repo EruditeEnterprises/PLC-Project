@@ -72,6 +72,9 @@
       [define-exp (id bodies)
         (define-exp id (map syntax-expand bodies))
       ]
+      [while-exp (test-exp body)
+        (while-exp (syntax-expand test-exp) (map syntax-expand body))
+      ]
       [else exp]
     )
   )

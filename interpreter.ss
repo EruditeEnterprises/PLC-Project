@@ -128,18 +128,7 @@
               ;)
             ;)
             (lambda (k)
-              (eval-exp test-exp env
-                (lambda (answer)
-                  (if answer
-                    (eval-all body env
-                      (lambda (x)
-                        (while-loop k)
-                      )
-                    )
-                    (apply-k k (void))
-                  )
-                )
-              )
+              (eval-exp test-exp env (while-k while-loop body env k))
             )
           )
           ] (while-loop k)

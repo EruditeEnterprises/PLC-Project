@@ -1,9 +1,4 @@
 ;For CPS
-;(define apply-k
-;  (lambda (k v)
-;    (k v)
-;  )
-;)
 
 (define apply-k
   (lambda (k v)
@@ -53,6 +48,15 @@
             env
             (new-env-k rands k)
           )
+        ]
+        [while-k (while-proc rands env k)
+          (if v
+            (eval-all rands env (proc-k while-proc k))
+            (apply-k k (void))
+          )
+        ]
+        [proc-k (proc k)
+          (proc k)
         ]
       )
     )

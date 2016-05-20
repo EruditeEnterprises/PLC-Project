@@ -151,4 +151,14 @@
     (env environment?)
     (k cont-or-proc?)
   ]
+  [while-k
+    (while-proc procedure?)
+    (rands (list-of expression?))
+    (env environment?)
+    (k cont-or-proc?)
+  ]
+  [proc-k
+    (proc procedure?)
+    (k cont-or-proc?)
+  ]
 )

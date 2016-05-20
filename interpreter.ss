@@ -52,13 +52,7 @@
         ;(let ([proc-value (eval-exp rator env)]
         ;      [args (eval-all rands env)])
         ;  (apply-proc proc-value args))
-        (eval-exp rator env 
-          (lambda (proc-val) 
-            (eval-all rands env 
-              (lambda (args) (apply-proc proc-val args k))
-            )
-          )
-        )
+        (eval-exp rator env (rator-k rands env k))
       ]
       [if-then-exp (condition true false)
           ;(let ([first (eval-exp condition env)])
@@ -80,14 +74,7 @@
               )
             )
           )
-          (eval-exp condition env
-            (lambda (result)
-              (if result
-                (eval-exp true env k)
-                (eval-exp false env k)
-              )
-            )
-          )
+          (eval-exp condition env (test-k true false env k))
         )
       ]
       [let-exp (type bound body)

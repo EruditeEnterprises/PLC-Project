@@ -16,6 +16,18 @@
         [append-k (the-car k)
           (apply-k k (cons the-car v))
         ]
+        [test-k (then-exp else-exp env k)
+          (if v
+            (eval-exp then-exp env k)
+            (eval-exp else-exp env k)
+          )
+        ]
+        [rator-k (rands env k)
+          (eval-all rands env (rands-k v k))
+        ]
+        [rands-k (proc-value k)
+          (apply-proc proc-value v k)
+        ]
       )
     )
   )

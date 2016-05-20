@@ -111,5 +111,21 @@
 (define-datatype continuation continuation?
   [init-k]
   [append-k (the-car symbol?) (k cont-or-proc?)]
+  [test-k
+    (then-exp expression?)
+    (else-exp expression?)
+    (env environment?)
+    (k cont-or-proc?) ; Changed to continuation later
+  ]
+  [rator-k 
+    (rands (list-of expression?))
+    (env environment?)
+    (k cont-or-proc?)
+  ]
+  [rands-k
+    (proc-value scheme-value?)
+    (k cont-or-proc?)
+  ]
+
 )
 

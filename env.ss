@@ -105,13 +105,10 @@
         ;    (set-in-env! old-env sym exp k fail)
         ;  )
         ;)
-        (list-find-position sym syms 
-          (lambda (pos)
-            (if (number? pos)
-              (replace-index vals pos exp k)
-              (set-in-env! old-env sym exp k fail)
-            )
-          )
+        (list-find-position 
+          sym 
+          syms 
+          (set-env-k vals exp old-env sym k fail)
         )
       ]
       [recursively-extended-env-record (ids bodies old-env)
@@ -124,13 +121,10 @@
         ;    (set-in-env! old-env sym exp k fail)
         ;  )
         ;)
-        (list-find-position sym ids 
-          (lambda (pos)
-            (if (number? pos)
-              (replace-index bodies pos exp k)
-              (set-in-env! old-env sym exp k fail)
-            )
-          )
+        (list-find-position 
+          sym 
+          ids 
+          (set-env-k bodies exp old-env sym k fail)
         )
       ]
     )

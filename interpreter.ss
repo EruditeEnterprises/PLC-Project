@@ -179,23 +179,7 @@
       ;  (set-cdr! proc-names name-clone)
       ;  (set-car! proc-names id)
       ;)
-      (clone proc-names
-        (lambda (name-clone)
-          (clone bodies
-            (lambda (bodies-clone)
-              (apply-k 
-                k
-                (begin
-                  (set-cdr! bodies bodies-clone)
-                  (set-car! bodies body)
-                  (set-cdr! proc-names name-clone)
-                  (set-car! proc-names id)
-                )
-              )              
-            )
-          )
-        )
-      )
+      (clone proc-names (clone-k id body bodies proc-names))
     ]
     [else 
       (eopl:error 'add-to-global "Global environment corrupted")

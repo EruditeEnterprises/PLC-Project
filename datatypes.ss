@@ -184,4 +184,25 @@
     (k cont-or-proc?)
     (fail procedure?)
   ]
+  [set-env-k
+    (vals list?)
+    (exp scheme-value?)
+    (old-env environment?)
+    (sym symbol?)
+    (k cont-or-proc?)
+    (fail procedure?)
+  ]
+  [global-add-k
+    (id symbol?)
+    (body scheme-value?)
+    (bodies list?)
+    (proc-names list?)
+    (name-clone list?)
+  ]
+  [clone-k
+    (id symbol?)
+    (body scheme-value?)
+    (bodies list?)
+    (proc-names list?)
+  ]
 )

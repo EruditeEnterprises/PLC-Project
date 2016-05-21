@@ -85,6 +85,26 @@
             (apply-env old-env sym k fail)
           )
         ]
+        [set-env-k (vals exp old-env sym k fail)
+          (if (number? v)
+            (replace-index vals v exp k)
+            (set-in-env! old-env sym exp k fail)
+          )
+        ]
+        [global-add-k (id body bodies proc-names name-clone)
+          (apply-k 
+            k
+            (begin
+              (set-cdr! bodies v)
+              (set-car! bodies body)
+              (set-cdr! proc-names name-clone)
+              (set-car! proc-names id)
+            )
+          )
+        ]
+        [clone-k (id body bodies proc-names)
+          (clone bodies (global-add-k id body bodies proc-names v))
+        ]
       )
     )
   )

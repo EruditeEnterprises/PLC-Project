@@ -161,4 +161,27 @@
     (proc procedure?)
     (k cont-or-proc?)
   ]
+  [list-ind-k
+    (k cont-or-proc?)
+  ]
+  [list-ind-pred-k 
+    (pred-cps procedure?)
+    (ls list?)
+    (k cont-or-proc?)
+  ]
+  [list-find-pos-k
+    (vals list?)
+    (sym symbol?)
+    (env environment?)
+    (k cont-or-proc?)
+    (fail procedure?)
+  ]
+  [list-find-rec-k 
+    (bodies list?)
+    (sym symbol?) 
+    (env environment?)
+    (old-env environment?)
+    (k cont-or-proc?)
+    (fail procedure?)
+  ]
 )

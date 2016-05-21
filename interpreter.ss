@@ -12,7 +12,7 @@
      (map prim-proc      
           *prim-proc-names*)
      (empty-env)
-     (lambda (x) x)
+     (init-k)    
     )
   )
 )

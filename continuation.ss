@@ -58,6 +58,33 @@
         [proc-k (proc k)
           (proc k)
         ]
+        [list-ind-k (k)
+          (if (number? v)
+            (apply-k k (+ 1 v))
+            (apply-k k #f)
+          )
+        ]
+        [list-ind-pred-k (pred-cps ls k)
+          (if v
+            (apply-k k 0)
+            (list-index pred-cps (cdr ls) (list-ind-k k))
+          )
+        ]
+        [list-find-pos-k (vals sym env k fail)
+          (if (number? v)
+            (apply-k k (list-ref vals v))
+            (apply-env env sym k fail)
+          )
+        ]
+        [list-find-rec-k (bodies sym env old-env k fail)
+          (if (number? v)
+            (if (not (expression? (list-ref bodies v)))
+              (apply-k k (list-ref bodies v))
+              (closure (list-ref bodies v) env k)
+            )
+            (apply-env old-env sym k fail)
+          )
+        ]
       )
     )
   )

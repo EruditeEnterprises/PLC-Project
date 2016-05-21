@@ -33,21 +33,7 @@
 		 ;(+ 1 list-index-r)
 		 ;#f))]
       [else 
-        (pred-cps (car ls) 
-          (lambda (first) 
-            (if first
-              (apply-k k 0)
-              (list-index pred-cps (cdr ls)
-                (lambda (list-index-r)
-                  (if (number? list-index-r)
-                    (apply-k k (+ 1 list-index-r))
-                    (apply-k k #f)
-                  )
-                )
-              )
-            )
-          )
-        )
+        (pred-cps (car ls) (list-ind-pred-k pred-cps ls k))
       ]
     )
   )
@@ -68,13 +54,10 @@
        ; 	(if (number? pos)
   	    ;    (succeed (list-ref vals pos))
   	    ;    (apply-env env sym succeed fail)))]
-        (list-find-position sym syms 
-          (lambda (pos)
-            (if (number? pos)
-              (apply-k succeed (list-ref vals pos))
-              (apply-env env sym succeed fail)
-            )
-          )
+        (list-find-position 
+          sym 
+          syms 
+          (list-find-pos-k vals sym env succeed fail)
         )
       ]
       [recursively-extended-env-record (ids bodies old-env)
@@ -87,16 +70,10 @@
         ;    (apply-env old-env sym succeed fail)
         ;  )
         ;)
-        (list-find-position sym ids
-          (lambda (pos)
-            (if (number? pos)
-              (if (not (expression? (list-ref bodies pos)))
-                (apply-k succeed (list-ref bodies pos))
-                (closure (list-ref bodies pos) env succeed)
-              )
-              (apply-env old-env sym succeed fail)
-            )
-          )
+        (list-find-position 
+          sym 
+          ids 
+          (list-find-rec-k bodies sym env old-env succeed fail)
         )
       ]
     )

@@ -116,6 +116,9 @@
         [proc-cons (map-result k) ;Nested Continuations with map-k
           (apply-k k (cons v map-result))
         ]
+        [set!-exp-k (env id k error)
+          (set-in-env! env id v k error)
+        ]
       )
     )
   )

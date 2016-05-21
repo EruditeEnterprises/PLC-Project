@@ -3,7 +3,8 @@
   list? pair? procedure? vector->list vector make-vector vector-ref 
   vector? number? symbol? set-car! set-cdr! vector-set! display 
   newline caar cadr cdar cddr caaar caadr cadar caddr cdaar cdadr 
-  cddar cddr map apply void member quotient list-tail append call/cc))
+  cddar cddr map apply void member quotient list-tail append 
+  call/cc exit-list))
 
 (define make-init-env         ; for now, our initial global environment only contains 
   (lambda ()
@@ -141,14 +142,21 @@
         ;      "variable not found in environment: ~s" id)
         ;  )
         ;)
-        (eval-exp body env 
-          (lambda (evaluated)
-            (set-in-env! env id evaluated 
-              k
-              (lambda () (eopl:error 'set-in-env! ; procedure to call if id not in env
-              "variable not found in environment: ~s" id))              
-            )
+        (eval-exp body env
+          (set!-exp-k 
+            env 
+            id 
+            k
+            (lambda () (eopl:error 'set-in-env! ; procedure to call if id not in env
+              "variable not found in environment: ~s" id))
           )
+          ;(lambda (evaluated)
+          ;  (set-in-env! env id evaluated 
+          ;    k
+          ;    (lambda () (eopl:error 'set-in-env! ; procedure to call if id not in env
+          ;    "variable not found in environment: ~s" id))              
+          ;  )
+          ;)
         )
       ]
       [define-exp (id bodies)
@@ -230,6 +238,11 @@
     (case prim-proc
       [(map) (map-cps (lambda (x k) (apply-proc (1st args) (list x) k)) (cadr args) k)]
       [(apply) (apply-proc (1st args) (cadr args) k)]
+      [(call/cc) (apply-proc 
+                        (car args) 
+                        (list (continuation-proc k)) k)
+      ]
+      [(exit-list) args]
       [else 
         (apply-k k 
           (case prim-proc
@@ -292,10 +305,6 @@
             [(quotient) (apply quotient args)]
             [(list-tail) (list-tail (1st args) (2nd args))]
             [(append) (apply append args)]
-            [(call/cc) (apply-proc 
-                        (car args) 
-                        (list (continuation-proc k)) k)
-            ]
             [else (error 'apply-prim-proc 
                   "Bad primitive procedure name: ~s" 
                   prim-op)]

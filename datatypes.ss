@@ -224,4 +224,10 @@
     (map-result list?)
     (k cont-or-proc?)
   ]
+  [set!-exp-k
+    (env environment?)
+    (id symbol?)
+    (k cont-or-proc?)
+    (error procedure?)
+  ]
 )

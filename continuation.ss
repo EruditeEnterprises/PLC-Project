@@ -110,6 +110,12 @@
             (append-k v k)
           )
         ]
+        [map-k (proc-cps ls k) ;Nested Continuations with proc-cons
+          (proc-cps (car ls) (proc-cons v k))
+        ]
+        [proc-cons (map-result k) ;Nested Continuations with map-k
+          (apply-k k (cons v map-result))
+        ]
       )
     )
   )
@@ -119,8 +125,7 @@
   (if (null? ls)
     (apply-k k '())
     (map-cps proc-cps (cdr ls)
-      (lambda (map-result)
-        (proc-cps (car ls)
-          (lambda (v)
-            (apply-k k
-              (cons v map-result))))))))
+      (map-k proc-cps ls k)
+    )
+  )
+)

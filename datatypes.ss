@@ -84,6 +84,9 @@
   [lambda-proc
     (proc procedure?)
   ]
+  [continuation-proc
+    (k continuation?)
+  ]
 )
 	
 ; environment type definitions
@@ -210,6 +213,15 @@
   [eval-all-k
     (rands (list-of expression?))
     (env environment?)
+    (k cont-or-proc?)
+  ]
+  [map-k ;For map-cps in continuation.ss
+    (proc-cps procedure?)
+    (ls list?)
+    (k cont-or-proc?)
+  ]
+  [proc-cons ;For map-cps in continuation.ss
+    (map-result list?)
     (k cont-or-proc?)
   ]
 )

@@ -3,7 +3,7 @@
   list? pair? procedure? vector->list vector make-vector vector-ref 
   vector? number? symbol? set-car! set-cdr! vector-set! display 
   newline caar cadr cdar cddr caaar caadr cadar caddr cdaar cdadr 
-  cddar cddr map apply void member quotient list-tail append))
+  cddar cddr map apply void member quotient list-tail append call/cc))
 
 (define make-init-env         ; for now, our initial global environment only contains 
   (lambda ()
@@ -217,6 +217,7 @@
     (cases proc-val proc-value
       [prim-proc (op) (apply-prim-proc op args k)]
       [lambda-proc (proc) (proc args k)]
+      [continuation-proc (k) (apply-k k (car args))]
 			; You will add other cases
       [else (error 'apply-proc
                    "Attempt to apply bad procedure: ~s" 
@@ -291,6 +292,10 @@
             [(quotient) (apply quotient args)]
             [(list-tail) (list-tail (1st args) (2nd args))]
             [(append) (apply append args)]
+            [(call/cc) (apply-proc 
+                        (car args) 
+                        (list (continuation-proc k)) k)
+            ]
             [else (error 'apply-prim-proc 
                   "Bad primitive procedure name: ~s" 
                   prim-op)]

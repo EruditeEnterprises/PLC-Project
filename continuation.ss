@@ -91,7 +91,7 @@
             (set-in-env! old-env sym exp k fail)
           )
         ]
-        [global-add-k (id body bodies proc-names name-clone)
+        [global-add-k (id body bodies proc-names name-clone k)
           (apply-k 
             k
             (begin
@@ -102,8 +102,13 @@
             )
           )
         ]
-        [clone-k (id body bodies proc-names)
-          (clone bodies (global-add-k id body bodies proc-names v))
+        [clone-k (id body bodies proc-names k)
+          (clone bodies (global-add-k id body bodies proc-names v k))
+        ]
+        [eval-all-k (rands env k)
+          (eval-all (cdr rands) env 
+            (append-k v k)
+          )
         ]
       )
     )

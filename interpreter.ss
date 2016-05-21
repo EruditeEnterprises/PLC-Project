@@ -179,7 +179,7 @@
       ;  (set-cdr! proc-names name-clone)
       ;  (set-car! proc-names id)
       ;)
-      (clone proc-names (clone-k id body bodies proc-names))
+      (clone proc-names (clone-k id body bodies proc-names k))
     ]
     [else 
       (eopl:error 'add-to-global "Global environment corrupted")
@@ -191,11 +191,7 @@
   (if (= index 0)
     (apply-k k (list args))
     ;(cons (car args) (split-vals (cdr args) (- index 1)))
-    (split-vals (cdr args) (- index 1)
-      (lambda (answer)
-        (apply-k k (cons (car args) answer))
-      )
-    )
+    (split-vals (cdr args) (- index 1) (append-k (car args) k))
   )
 )
 
@@ -207,15 +203,7 @@
       ;(let ([x (eval-exp (car rands) env)]) ;Gonna have to add a continuation here later
       ;  (cons x (eval-all (cdr rands) env))
       ;)
-      (eval-exp (car rands) env 
-        (lambda (first)
-          (eval-all (cdr rands) env 
-            (lambda (rest)
-              (apply-k k (cons first rest))
-            )
-          )
-        )
-      )
+      (eval-exp (car rands) env (eval-all-k rands env k))
     )
   )
 )

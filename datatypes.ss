@@ -110,7 +110,7 @@
 
 (define-datatype continuation continuation?
   [init-k]
-  [append-k (the-car symbol?) (k cont-or-proc?)]
+  [append-k (the-car scheme-value?) (k cont-or-proc?)]
   [if-else-k
     (then-exp expression?)
     (else-exp expression?)
@@ -198,11 +198,18 @@
     (bodies list?)
     (proc-names list?)
     (name-clone list?)
+    (k cont-or-proc?)
   ]
   [clone-k
     (id symbol?)
     (body scheme-value?)
     (bodies list?)
     (proc-names list?)
+    (k cont-or-proc?)
+  ]
+  [eval-all-k
+    (rands (list-of expression?))
+    (env environment?)
+    (k cont-or-proc?)
   ]
 )

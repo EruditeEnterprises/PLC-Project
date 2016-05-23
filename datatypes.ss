@@ -87,6 +87,9 @@
   [continuation-proc
     (k continuation?)
   ]
+  ;[escape-proc
+  ;  (proc proc-val?)
+  ;]
 )
 	
 ; environment type definitions

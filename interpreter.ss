@@ -4,7 +4,7 @@
   vector? number? symbol? set-car! set-cdr! vector-set! display 
   newline caar cadr cdar cddr caaar caadr cadar caddr cdaar cdadr 
   cddar cddr map apply void member quotient list-tail append 
-  call/cc exit-list))
+  call/cc exit-list escaper))
 
 (define make-init-env         ; for now, our initial global environment only contains 
   (lambda ()
@@ -226,6 +226,7 @@
       [prim-proc (op) (apply-prim-proc op args k)]
       [lambda-proc (proc) (proc args k)]
       [continuation-proc (k) (apply-k k (car args))]
+      ;[escape-proc (proc) (apply-proc proc args (init-k))]
 			; You will add other cases
       [else (error 'apply-proc
                    "Attempt to apply bad procedure: ~s" 
@@ -305,6 +306,7 @@
             [(quotient) (apply quotient args)]
             [(list-tail) (list-tail (1st args) (2nd args))]
             [(append) (apply append args)]
+            ;[(escaper) (escape-proc (1st args))]
             [else (error 'apply-prim-proc 
                   "Bad primitive procedure name: ~s" 
                   prim-op)]
